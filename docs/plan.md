@@ -9,8 +9,8 @@ Schema: `public` (el proyecto es solo de lavadoras).
 | 2 | `sql/lavadoras/001_esquema.sql` (tablas, RLS, borrado lógico, auditoría, funciones de la app) | ✅ Ejecutado (03/11/2026) |
 | 3 | Pruebas de seguridad del SQL en el proyecto real | ✅ 40/40 (03/11/2026) |
 | 4 | `002`: funciones de administración (aprobar, cambiar plan, suspender) | ✅ Ejecutado (03/11/2026) |
-| 4b | `003`: campos personalizados por cliente (columna `extra`) | En revisión |
-| 5 | zynthea-ops para los dos proyectos | Pendiente |
+| 4b | `003`: campos personalizados por cliente (columna `extra`) | ✅ Ejecutado (03/11/2026, sin respaldo: solo había datos de prueba) |
+| 5 | zynthea-ops para los dos proyectos | Pendiente · **obligatorio antes de aprobar al primer cliente real** |
 | 6 | App parte 1 (login, pendiente, Mi lavadora) + mover la demo a `/demo/` + configuración de Auth | Pendiente |
 | 7–9 | App: Básico → Estándar/Profesional/Premium, prueba completa y publicación | Pendiente |
 | 10 | Migrar DI-KAR (Premium) | Pendiente |
@@ -24,6 +24,7 @@ Aunque cambie de plan o se agreguen campos.
 - **Nunca** `DROP` ni `RENAME` de columnas o tablas con datos. Renombrar = crear la columna nueva + copiar los datos (la vieja se queda).
 - **Antes de cada migración:** en zynthea-ops correr "Respaldo diario" a mano (éxito) y luego "Mantenimiento semanal" (restauración de prueba OK).
 - Ningún cambio de `tipo` en un campo personalizado con datos: se crea un campo nuevo.
+- **Antes de aprobar al primer cliente real**, zynthea-ops debe respaldar el proyecto zynthea-lavadoras y probar su restauración (paso 5). Desde ahí, **ninguna migración se ejecuta sin respaldo previo**. (El 003 se ejecutó sin respaldo porque solo había datos de prueba; es la única excepción.)
 
 **Cambio de plan:** solo oculta o muestra funciones; nunca borra ni modifica datos.
 Verificado: BAS → PRO → BAS → PRO deja la huella (md5) de todos los datos idéntica en los 5 pasos.
