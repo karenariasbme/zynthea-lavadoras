@@ -1,6 +1,6 @@
 # Plan: Sistema para Lavadoras con acceso por aprobación
 
-Proyecto Supabase propio: **zynthea-lavadoras** (Free, us-east-1), separado de zynthea-talleres.
+Proyecto Supabase propio: **zynthea-lavadoras** (Free, us-east-2), separado de zynthea-talleres.
 Schema: `public` (el proyecto es solo de lavadoras).
 
 | Paso | Qué | Estado |
@@ -12,7 +12,7 @@ Schema: `public` (el proyecto es solo de lavadoras).
 | 4b | `003`: campos personalizados por cliente (columna `extra`) | ✅ Ejecutado (03/11/2026, sin respaldo: solo había datos de prueba) |
 | 4c | `004`: `corregir_registro()` (cliente, fecha y campos de cambios y usos; solo el dueño) + corrección del 003 (obligatorios en usos de un cambio) | ✅ Ejecutado (03/11/2026, sin respaldo: solo había datos de prueba) |
 | 4d | `005`: autor (`created_by`) a null cuando se elimina una cuenta (encontrado en la prueba de restauración del paso 5) | Preparado · se ejecuta **después** del paso 5, con respaldo previo |
-| 5 | zynthea-ops para los dos proyectos | Pendiente · **obligatorio antes de aprobar al primer cliente real** |
+| 5 | zynthea-ops para los dos proyectos | ✅ Respaldo, restauración de prueba y reporte verificados (03/11/2026) |
 | 6 | App parte 1 (login, pendiente, Mi lavadora) + mover la demo a `/demo/` + configuración de Auth | Pendiente |
 | 7–9 | App: Básico → Estándar/Profesional/Premium, prueba completa y publicación | Pendiente |
 | 10 | Migrar DI-KAR (Premium) | Pendiente |
