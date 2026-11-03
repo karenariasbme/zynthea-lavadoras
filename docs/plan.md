@@ -10,6 +10,7 @@ Schema: `public` (el proyecto es solo de lavadoras).
 | 3 | Pruebas de seguridad del SQL en el proyecto real | ✅ 40/40 (03/11/2026) |
 | 4 | `002`: funciones de administración (aprobar, cambiar plan, suspender) | ✅ Ejecutado (03/11/2026) |
 | 4b | `003`: campos personalizados por cliente (columna `extra`) | ✅ Ejecutado (03/11/2026, sin respaldo: solo había datos de prueba) |
+| 4c | `004`: `corregir_registro()` (cliente, fecha y campos de cambios y usos; solo el dueño) + corrección del 003 (obligatorios en usos de un cambio) | ✅ Ejecutado (03/11/2026, sin respaldo: solo había datos de prueba) |
 | 5 | zynthea-ops para los dos proyectos | Pendiente · **obligatorio antes de aprobar al primer cliente real** |
 | 6 | App parte 1 (login, pendiente, Mi lavadora) + mover la demo a `/demo/` + configuración de Auth | Pendiente |
 | 7–9 | App: Básico → Estándar/Profesional/Premium, prueba completa y publicación | Pendiente |
