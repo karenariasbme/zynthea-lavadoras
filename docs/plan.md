@@ -6,13 +6,34 @@ Schema: `public` (el proyecto es solo de lavadoras).
 | Paso | Qué | Estado |
 |---|---|---|
 | 1 | Decisiones (proyecto nuevo, repo `zynthea-lavadoras`, DI-KAR migra en el paso 10 como Premium) | ✅ |
-| 2 | `sql/lavadoras/001_esquema.sql` (tablas, RLS, borrado lógico, auditoría, funciones de la app) | En revisión |
-| 3 | Pruebas de seguridad del SQL en el proyecto real | Pendiente |
-| 4 | `002`: funciones de administración (aprobar, cambiar plan, suspender) | Pendiente |
+| 2 | `sql/lavadoras/001_esquema.sql` (tablas, RLS, borrado lógico, auditoría, funciones de la app) | ✅ Ejecutado (03/11/2026) |
+| 3 | Pruebas de seguridad del SQL en el proyecto real | ✅ 40/40 (03/11/2026) |
+| 4 | `002`: funciones de administración (aprobar, cambiar plan, suspender) | ✅ Ejecutado (03/11/2026) |
+| 4b | `003`: campos personalizados por cliente (columna `extra`) | En revisión |
 | 5 | zynthea-ops para los dos proyectos | Pendiente |
 | 6 | App parte 1 (login, pendiente, Mi lavadora) + mover la demo a `/demo/` + configuración de Auth | Pendiente |
 | 7–9 | App: Básico → Estándar/Profesional/Premium, prueba completa y publicación | Pendiente |
 | 10 | Migrar DI-KAR (Premium) | Pendiente |
+
+## Requisito permanente: cada cliente conserva SIEMPRE todo lo que guardó
+
+Aunque cambie de plan o se agreguen campos.
+
+**Regla de migraciones (todo script desde el 003):**
+- Solo cambios **aditivos**: `ADD COLUMN` con default, tablas nuevas, funciones nuevas o reemplazadas.
+- **Nunca** `DROP` ni `RENAME` de columnas o tablas con datos. Renombrar = crear la columna nueva + copiar los datos (la vieja se queda).
+- **Antes de cada migración:** en zynthea-ops correr "Respaldo diario" a mano (éxito) y luego "Mantenimiento semanal" (restauración de prueba OK).
+- Ningún cambio de `tipo` en un campo personalizado con datos: se crea un campo nuevo.
+
+**Cambio de plan:** solo oculta o muestra funciones; nunca borra ni modifica datos.
+Verificado: BAS → PRO → BAS → PRO deja la huella (md5) de todos los datos idéntica en los 5 pasos.
+
+**Campos personalizados por cliente (003):**
+- Columna `extra jsonb not null default '{}'` en aceites, filtros, vehiculos, cambios, usos_aceite y usos_filtro.
+- Tabla `campos_personalizados` (lavadora, tabla, clave, etiqueta, tipo texto/numero/fecha/lista/si_no, opciones, obligatorio, orden, activo). El cliente la lee; solo el admin la escribe desde el SQL Editor con `agregar_campo()` y `activar_campo()`.
+- La base valida que cada valor respete su tipo. Al editar, los valores que no se envían se conservan (para vaciar uno se envía `null`). Un campo desactivado se oculta pero sus datos quedan.
+- Los obligatorios se exigen al crear registros nuevos (los anteriores al campo no se bloquean).
+- La app dibuja estos campos sola en formularios, tablas y Excel.
 
 ## Paso 5 · zynthea-ops con dos proyectos
 
