@@ -11,7 +11,7 @@ Schema: `public` (el proyecto es solo de lavadoras).
 | 4 | `002`: funciones de administración (aprobar, cambiar plan, suspender) | ✅ Ejecutado (03/11/2026) |
 | 4b | `003`: campos personalizados por cliente (columna `extra`) | ✅ Ejecutado (03/11/2026, sin respaldo: solo había datos de prueba) |
 | 4c | `004`: `corregir_registro()` (cliente, fecha y campos de cambios y usos; solo el dueño) + corrección del 003 (obligatorios en usos de un cambio) | ✅ Ejecutado (03/11/2026, sin respaldo: solo había datos de prueba) |
-| 4d | `005`: autor (`created_by`) a null cuando se elimina una cuenta (encontrado en la prueba de restauración del paso 5) | Preparado · se ejecuta **después** del paso 5, con respaldo previo |
+| 4d | `005`: autor (`created_by`) a null cuando se elimina una cuenta (encontrado en la prueba de restauración del paso 5) | ✅ Ejecutado (03/11/2026, con respaldo previo de las 18:20) |
 | 5 | zynthea-ops para los dos proyectos | ✅ Respaldo, restauración de prueba y reporte verificados (03/11/2026) |
 | 6 | App parte 1 (login, pendiente, Mi lavadora) + mover la demo a `/demo/` + configuración de Auth | Pendiente |
 | 7–9 | App: Básico → Estándar/Profesional/Premium, prueba completa y publicación | Pendiente |
