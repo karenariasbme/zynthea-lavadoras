@@ -13,7 +13,7 @@ Schema: `public` (el proyecto es solo de lavadoras).
 | 4c | `004`: `corregir_registro()` (cliente, fecha y campos de cambios y usos; solo el dueño) + corrección del 003 (obligatorios en usos de un cambio) | ✅ Ejecutado (03/11/2026, sin respaldo: solo había datos de prueba) |
 | 4d | `005`: autor (`created_by`) a null cuando se elimina una cuenta (encontrado en la prueba de restauración del paso 5) | ✅ Ejecutado (03/11/2026, con respaldo previo de las 18:20) |
 | 5 | zynthea-ops para los dos proyectos | ✅ Respaldo, restauración de prueba y reporte verificados (03/11/2026) |
-| 6 | App parte 1 (login, pendiente, Mi lavadora) + mover la demo a `/demo/` + configuración de Auth | 🟡 Parte 1 probada en local con lavpend, lavbas y lavpro (15/11/2026). Auth: URLs, Google y correo listos (15/11/2026). Falta: unir a `main` y probar en GitHub Pages; plantillas en español + SMTP antes del primer cliente real |
+| 6 | App parte 1 (login, pendiente, Mi lavadora) + mover la demo a `/demo/` + configuración de Auth | 🟡 Parte 1 en `main` y probada en GitHub Pages con lavpend, lavbas y lavpro, a 375 px y en escritorio (15/11/2026). Auth: URLs, Google y correo listos. Falta: prueba de Karen con Google y registro nuevo (+lavnuevo); plantillas en español + SMTP antes del primer cliente real |
 | 7–9 | App: Básico → Estándar/Profesional/Premium, prueba completa y publicación | Pendiente |
 | 10 | Migrar DI-KAR (Premium) | Pendiente |
 
@@ -66,3 +66,13 @@ Verificado: BAS → PRO → BAS → PRO deja la huella (md5) de todos los datos 
 - ✅ Google: callback `https://hkpuevxyqxohksazowul.supabase.co/auth/v1/callback` agregado al cliente `zynthea-talleres-web`; Google activado en Supabase lavadoras con ese Client ID y un **secreto nuevo**, que también se actualizó en Supabase talleres.
 - ✅ Correo: Confirm email activo, contraseña mínima 8.
 - ⏳ **Pendiente antes del primer cliente real: SMTP propio + plantillas en español.** Supabase no deja editar las plantillas sin SMTP propio, así que por ahora salen las plantillas por defecto en inglés. Configurar el SMTP primero y después las cuatro plantillas (confirmar registro, restablecer contraseña, cambio de correo, enlace mágico).
+
+## Cuentas de prueba (solo para pruebas)
+
+En Supabase zynthea-lavadoras. **La contraseña no se escribe aquí**: este repositorio es público y este archivo se publica en GitHub Pages. Está en la memoria local de Claude Code (y la tiene Karen).
+
+| Cuenta | Estado |
+|---|---|
+| `karenarias.bme+lavpend@gmail.com` | Pendiente, sin aprobar |
+| `karenarias.bme+lavbas@gmail.com` | Aprobada, plan BAS |
+| `karenarias.bme+lavpro@gmail.com` | Aprobada, plan PRO |
