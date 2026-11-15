@@ -12,3 +12,8 @@ export const state = {
 
 /** ¿El usuario puede editar la configuración de la lavadora? (solo el dueño) */
 export const esDueno = () => state.acceso?.rol === "dueno";
+
+/** ¿El plan de la lavadora incluye el mínimo indicado? (mismo orden que plan_incluye() en la base: BAS < EST < PRO < PRE) */
+const ORDEN_PLANES = ["BAS", "EST", "PRO", "PRE"];
+export const planIncluye = (minimo) =>
+  ORDEN_PLANES.indexOf(state.lavadora?.plan) >= ORDEN_PLANES.indexOf(minimo);

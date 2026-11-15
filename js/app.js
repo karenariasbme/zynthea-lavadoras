@@ -1,11 +1,12 @@
 import { sb } from "./sb.js";
 import { h, errMsg, must, waLink, PLANES_URL, DEMO_URL } from "./util.js";
-import { state, LAVADORA_COLS } from "./state.js";
-import { loading, errorBox, lavadoraLogo, waIcon, aplicarColores } from "./ui.js";
+import { state, LAVADORA_COLS, planIncluye } from "./state.js";
+import { loading, errorBox, lavadoraLogo, waIcon, aplicarColores, ventanaInfo, icono } from "./ui.js";
 import * as inicio from "./views/inicio.js";
 import * as productos from "./views/productos.js";
 import * as config from "./views/config.js";
 import * as clientes from "./views/clientes.js";
+import * as cambios from "./views/cambios.js";
 import * as admin from "./views/admin.js";
 
 const $ = (id) => document.getElementById(id);
@@ -15,6 +16,7 @@ let routes = {
   inicio: inicio.render,
   aceites: (box) => productos.render(box, "aceites"),
   filtros: (box) => productos.render(box, "filtros"),
+  cambios: cambios.render,
   clientes: clientes.render,
   config: config.render,
 };
@@ -29,6 +31,8 @@ async function route() {
     if (a.dataset.route === key) a.setAttribute("aria-current", "page");
     else a.removeAttribute("aria-current");
   }
+  // En el celular (Profesional), Clientes y Configuración están dentro de "Más"
+  $("navMas").classList.toggle("activo", key === "clientes" || key === "config");
   const view = $("view");
   const token = ++seq;
   view.replaceChildren(loading());
@@ -173,10 +177,25 @@ async function init() {
 
   updateChrome();
   $("logoutBtn").addEventListener("click", logout);
+  // Profesional: aparece Cambios; en el celular la barra es Inicio · Aceites · Filtros · Cambios · Más
+  const pro = planIncluye("PRO");
+  document.querySelector('#nav a[data-route="cambios"]').hidden = !pro;
+  document.body.classList.toggle("menu-mas", pro);
+  $("navMas").addEventListener("click", abrirMas);
   $("splash").hidden = true;
   $("shell").hidden = false;
   window.addEventListener("hashchange", route);
   route();
+}
+
+/** Menú "Más" del celular: Clientes, Configuración y Salir. */
+function abrirMas() {
+  const ir = (hash) => () => { info.cerrar(); location.hash = hash; };
+  const item = (ico, txt, onclick) => h("button", { class: "mas-item", type: "button", onclick }, icono(ico), h("span", {}, txt));
+  const info = ventanaInfo({ titulo: "Más", clase: "modal-mas", contenido: h("div", { class: "mas-lista" },
+    item("clientes", "Clientes", ir("#clientes")),
+    item("config", "Configuración", ir("#config")),
+    item("salir", "Salir", () => { info.cerrar(); logout(); })) });
 }
 
 /** Cuenta de administradora: barra con "Panel de administración" y solo la ruta del panel. */

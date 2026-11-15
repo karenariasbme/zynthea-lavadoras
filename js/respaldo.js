@@ -3,7 +3,7 @@
 import { sb } from "./sb.js";
 import { must, PLANES } from "./util.js";
 import { state } from "./state.js";
-import { cantidadTxt, num, diaTxt, momentoTxt, camposDe, hoy } from "./stock.js";
+import { cantidadTxt, num, diaTxt, momentoTxt, camposDe, hoy, galonesDe, equivalenciaTxt } from "./stock.js";
 
 const TABLAS = {
   aceites: "Aceite", filtros: "Filtro", usos_aceite: "Uso de aceite", usos_filtro: "Uso de filtro",
@@ -15,7 +15,9 @@ const CAMPOS = {
   stock_inicial: "Stock inicial", entradas: "Entradas", minimo: "Avisar en", precio: "Precio", precio_cuarto: "Precio del cuarto",
   cliente: "Cliente", fecha: "Fecha", cantidad: "Cantidad", clase: "Clase", valor: "Valor",
   color_primario: "Color primario", color_acento: "Color de acento", logo_path: "Logo", mano_obra: "Mano de obra",
-  plan: "Plan", activa: "Activa", rol: "Rol", marca_vehiculo: "Marca", modelo: "Modelo", total: "Total",
+  plan: "Plan", activa: "Activa", rol: "Rol", marca_vehiculo: "Marca", modelo: "Vehículo", total: "Total",
+  sae: "SAE", uso: "Uso", rosca: "Rosca", precio_compra: "Precio de compra", galones_unidad: "Galones por envase",
+  segmento: "Auto / Moto", placa: "Placa",
 };
 const OCULTOS = new Set(["id", "lavadora_id", "created_by", "created_at", "updated_at", "deleted_at", "aceite_id", "filtro_id",
   "cambio_id", "vehiculo_id", "user_id", "extra"]);
@@ -42,6 +44,7 @@ export async function leerAuditoria(desde = 0, cuantos = 200) {
 const valorTxt = (campo, v, fila, productos) => {
   if (v == null || v === "") return "—";
   if (campo === "plan") return PLANES[v] || v;
+  if (campo === "segmento") return v === "moto" ? "Moto" : "Auto";
   if (campo === "activa") return v ? "Sí" : "No";
   if (campo === "fecha") return diaTxt(v);
   if (campo === "logo_path") return "imagen";
@@ -132,6 +135,7 @@ const conExtra = (obj, campos, extra) => { for (const c of campos) obj[c.etiquet
 export async function descargarMisDatos() {
   const XLSX = await cargarXLSX();
   const conPrecios = ["EST", "PRO", "PRE"].includes(state.lavadora.plan);
+  const conCambios = ["PRO", "PRE"].includes(state.lavadora.plan);
   const [aceites, filtros, stockA, stockF, usosA, usosF, campos, productos] = await Promise.all([
     todo(() => sb.from("aceites").select("*").order("nombre")),
     todo(() => sb.from("filtros").select("*").order("nombre")),
@@ -142,6 +146,7 @@ export async function descargarMisDatos() {
     todosLosCampos(),
     nombresProductos(),
   ]);
+  const cambios = conCambios ? await todo(() => sb.from("cambios").select("*").order("fecha", { ascending: false })) : [];
   const aud = await todo(() => sb.from("auditoria").select("id,tabla,registro_id,accion,antes,despues,email,at")
     .order("at", { ascending: false }).order("id", { ascending: false }));
   const actual = new Map([...stockA, ...stockF].map((x) => [x.id, x.actual]));
@@ -151,17 +156,19 @@ export async function descargarMisDatos() {
     Lavadora: [{ Lavadora: l.nombre, Plan: PLANES[l.plan], Correo: state.email, "Mano de obra": Number(l.mano_obra),
                  "Respaldo descargado": momentoTxt(new Date().toISOString()) }],
     Aceites: aceites.map((a) => conExtra({
-      Nombre: a.nombre, Tipo: a.tipo, Marca: a.marca, Presentación: a.presentacion,
+      Nombre: a.nombre, Marca: a.marca, SAE: a.sae, Tipo: a.tipo, Uso: a.uso, Presentación: a.presentacion,
+      "Galones por envase": galonesDe(a) ?? "",
       "Stock actual": a.deleted_at ? "" : Number(actual.get(a.id) ?? 0), "Stock actual (texto)": a.deleted_at ? "" : cantidadTxt("aceites", a, actual.get(a.id)),
+      "Equivalencia en galones": a.deleted_at ? "" : equivalenciaTxt(a, actual.get(a.id)).replace(/^= /, ""),
       "Stock inicial": Number(a.stock_inicial), Entradas: Number(a.entradas), "Avisar en": Number(a.minimo),
-      ...(conPrecios ? { Precio: Number(a.precio), "Precio del cuarto": Number(a.precio_cuarto) } : {}),
+      ...(conPrecios ? { "Precio de compra": Number(a.precio_compra), "Precio de venta": Number(a.precio), "Venta por cuarto": Number(a.precio_cuarto) } : {}),
       Estado: estadoFila(a), Creado: momentoTxt(a.created_at),
     }, campos.aceites, a.extra)),
     Filtros: filtros.map((f) => conExtra({
-      Nombre: f.nombre, Tipo: f.tipo, Marca: f.marca, Código: f.referencia, Para: f.aplicacion,
+      Nombre: f.nombre, Tipo: f.tipo, Marca: f.marca, Rosca: f.rosca, Código: f.referencia, Para: f.aplicacion,
       "Stock actual": f.deleted_at ? "" : Number(actual.get(f.id) ?? 0),
       "Stock inicial": Number(f.stock_inicial), Entradas: Number(f.entradas), "Avisar en": Number(f.minimo),
-      ...(conPrecios ? { Precio: Number(f.precio) } : {}),
+      ...(conPrecios ? { "Precio de compra": Number(f.precio_compra), "Precio de venta": Number(f.precio) } : {}),
       Estado: estadoFila(f), Creado: momentoTxt(f.created_at),
     }, campos.filtros, f.extra)),
     "Usos de aceite": usosA.map((u) => { const p = productos.get(u.aceite_id); return conExtra({
@@ -175,6 +182,10 @@ export async function descargarMisDatos() {
       Cantidad: Number(u.cantidad), ...(conPrecios ? { Valor: Number(u.valor) } : {}),
       Estado: estadoFila(u), Registrado: momentoTxt(u.created_at),
     }, campos.usos_filtro, u.extra); }),
+    ...(conCambios ? { Cambios: cambios.map((c) => ({
+      Fecha: diaTxt(c.fecha), Cliente: c.cliente, "Auto / Moto": c.segmento === "moto" ? "Moto" : "Auto", Tipo: c.tipo, Placa: c.placa,
+      Vehículo: c.modelo, "Mano de obra": Number(c.mano_obra), Total: Number(c.total), Estado: estadoFila(c), Registrado: momentoTxt(c.created_at),
+    })) } : {}),
     "Historial de cambios": aud.map((r) => {
       const x = describir(r, productos, campos);
       return { Fecha: x.fecha, Usuario: x.usuario, Acción: x.accion, Qué: x.que,

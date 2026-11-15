@@ -16,7 +16,8 @@ Schema: `public` (el proyecto es solo de lavadoras).
 | 6 | App parte 1 (login, pendiente, Mi lavadora) + mover la demo a `/demo/` + configuración de Auth | ✅ Parte 1 en `main` y probada en GitHub Pages con lavpend, lavbas y lavpro, a 375 px y en escritorio. Auth verificado: "Continuar con Google" con una cuenta nueva y registro de +lavnuevo con confirmación por correo, ambos en "Tu acceso está en revisión" (15/11/2026). Queda para antes del primer cliente real: SMTP propio + plantillas en español |
 | 6b | Panel de administración en la app + `006` (admins, invitaciones, funciones `admin_*`) | 🟡 006 ejecutado con respaldo y restauración de prueba previos (15/11/2026); clientes rechazados por las 10 funciones `admin_*` (lavpend, lavbas). Admin: `karenarias.bme@gmail.com`. Panel en la rama `panel-admin`, probado con datos simulados a 375 px y escritorio. Falta: prueba real de Karen con su cuenta y unir a `main` |
 | 7 | App Plan Básico: Aceites y Filtros con Supabase, menú tipo app, Configuración, buscador con marca y stock bajo, memoria al escribir | ✅ En `main` (15/11/2026), sin migraciones. Incluye Clientes (buscador e historial por cliente), Historial de cambios y Descargar mis datos. Probado con lavbas contra Supabase real a 375 px y escritorio; landing actualizada (galones y cuartos en Básico, respaldo en Excel en todos los planes) |
-| 8–9 | App: Estándar/Profesional/Premium, prueba completa y publicación | Pendiente |
+| 8 | Plan Profesional (cliente de Karen): `007` + Aceites con SAE/uso/presentaciones, Filtros con rosca, precios de compra y venta, pestaña Cambios (Autos/Motos) | 🟡 `007` ejecutado (15/11/2026) con respaldo y restauración de prueba previos; 24/24 pruebas en la base (lavbas y lavpro). App en la rama `paso8-profesional`, probada con lavpro a 375 px y escritorio. Falta: revisión de Karen y unir a `main` |
+| 9 | Premium, prueba completa y publicación | Pendiente |
 | 10 | Migrar DI-KAR (Premium) | Pendiente |
 
 ## Requisito permanente: cada cliente conserva SIEMPRE todo lo que guardó
@@ -84,6 +85,14 @@ Verificado: BAS → PRO → BAS → PRO deja la huella (md5) de todos los datos 
 
 **Pendiente para el paso 8 (con respaldo + restauración de prueba antes):**
 - Función `registrar_entrada(p_tabla, p_id, p_cantidad)` en la base (suma atómica `entradas = entradas + n`, valida plan y rol) para Premium con varios usuarios. La app pasará a usarla en lugar de la suma desde el navegador.
+
+## Paso 8 · Plan Profesional
+
+- **`007`** (aditivo): aceites `sae`, `uso`, `galones_unidad`, `precio_compra`; filtros `rosca`, `precio_compra`; cambios `segmento` (auto/moto), `tipo`, `placa`; vistas `stock_*` con las columnas nuevas al final; `proteger_precios()` cubre `precio_compra`; función nueva `registrar_cambio_pro()` (la de antes no cambia).
+- **Stock (opción A)**: envases cerrados por unidades enteras; solo el Galón se vende por cuartos. Presentaciones: Cuarto 0,25 · Galón 1 · Galón y cuarto 1,25 · Minicaneca 2,5 · Caneca 5 galones. La base lo valida en `registrar_cambio_pro()`.
+- **Planes**: SAE, uso, rosca, presentaciones y pestañas en todos; precios de compra y venta desde el Estándar; Cambios desde el Profesional.
+- **Menú**: escritorio Inicio · Aceites · Filtros · Cambios · Clientes · Configuración; celular (Profesional) Inicio · Aceites · Filtros · Cambios · Más (Clientes, Configuración, Salir).
+- Pendiente: `registrar_entrada()` en la base para Premium (sigue anotado en el paso 7).
 
 ## Cuentas de prueba (solo para pruebas)
 

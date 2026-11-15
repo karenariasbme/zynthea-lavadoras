@@ -4,34 +4,56 @@ import { h, must } from "./util.js";
 import { field, input } from "./ui.js";
 
 // ---------- Qué tiene cada tipo de producto ----------
-export const TIPOS_ACEITE = ["Mineral", "Semisintético", "Sintético", "Diésel", "Transmisión automática", "Caja / diferencial", "Hidráulico", "Frenos", "Refrigerante"];
-export const TIPOS_FILTRO = ["Aceite", "Aire", "Combustible", "Cabina", "Transmisión", "Aire comprimido"];
-export const PRESENTACIONES = ["Galón", "Cuarto", "Litro", "Caneca 5 gal", "Tanque 55 gal"];
+export const TIPOS_ACEITE = ["Mineral", "Semisintético", "Sintético"];
+export const USOS_ACEITE = ["Motor", "Caja", "Transmisión", "Refrigerante", "Otro"];
+export const TIPOS_FILTRO = ["Aceite", "Aire", "Combustible", "Cabina"];
+/** Presentaciones con su equivalencia en galones (pestañas de Aceites, en este orden). */
+export const PRESENTACIONES = [
+  { nombre: "Cuarto", galones: 0.25, tab: "Cuartos", una: "cuarto", varias: "cuartos" },
+  { nombre: "Galón", galones: 1, tab: "Galones", una: "galón", varias: "galones" },
+  { nombre: "Galón y cuarto", galones: 1.25, tab: "Galón y cuarto", una: "envase de galón y cuarto", varias: "envases de galón y cuarto" },
+  { nombre: "Minicaneca", galones: 2.5, tab: "Minicanecas", una: "minicaneca", varias: "minicanecas" },
+  { nombre: "Caneca", galones: 5, tab: "Canecas", una: "caneca", varias: "canecas" },
+];
 
 export const KINDS = {
   aceites: {
     tabla: "aceites", vista: "stock_aceites", usos: "usos_aceite", fk: "aceite_id", tipoUso: "aceite",
     titulo: "Aceites", uno: "aceite", Uno: "Aceite", nuevo: "Nuevo aceite", icono: "aceite",
     vacio: "Todavía no tienes aceites. Agrega el primero con su stock inicial.",
-    buscarPh: "Buscar: 20W-50, sintético, Mobil…",
-    texto: ["nombre", "tipo", "marca", "presentacion"],
-    sugerencias: ["nombre", "tipo", "marca", "presentacion"],
+    buscarPh: "Buscar: Mobil, 20W-50, sintético…",
+    texto: ["nombre", "marca", "sae", "tipo", "uso", "presentacion"],
+    sugerencias: ["nombre", "tipo", "marca", "presentacion", "sae", "uso"],
     tiposBase: TIPOS_ACEITE,
   },
   filtros: {
     tabla: "filtros", vista: "stock_filtros", usos: "usos_filtro", fk: "filtro_id", tipoUso: "filtro",
     titulo: "Filtros", uno: "filtro", Uno: "Filtro", nuevo: "Nuevo filtro", icono: "filtro",
     vacio: "Todavía no tienes filtros. Agrega el primero con su stock inicial.",
-    buscarPh: "Buscar: código, aire, Toyota…",
-    texto: ["nombre", "tipo", "marca", "referencia", "aplicacion"],
-    sugerencias: ["nombre", "tipo", "marca", "referencia", "aplicacion"],
+    buscarPh: "Buscar: código, rosca, aire, Toyota…",
+    texto: ["nombre", "tipo", "marca", "referencia", "aplicacion", "rosca"],
+    sugerencias: ["nombre", "tipo", "marca", "referencia", "aplicacion", "rosca"],
     tiposBase: TIPOS_FILTRO,
   },
 };
 
-// ---------- Cantidades ----------
-/** Aceite que se cuenta en galones (1 cuarto = 0,25). Igual que valor_aceite() en la base. */
-export const enGalones = (p) => !!p && /gal/i.test(p.presentacion || "") && !/caneca|tanque|balde/i.test(p.presentacion || "");
+// ---------- Presentaciones y cantidades ----------
+// Opción A (acordada): envases cerrados por unidades enteras; solo el Galón se vende por cuartos.
+// La base valida lo mismo en registrar_cambio_pro().
+export const presentacionDe = (p) => PRESENTACIONES.find((x) => norm(x.nombre) === norm(limpiar(p?.presentacion)));
+
+/** Solo la presentación "Galón" se cuenta y se vende por cuartos (0,25). */
+export const porCuartos = (p) => norm(limpiar(p?.presentacion)) === "galon";
+export const enGalones = porCuartos;   // nombre anterior
+
+/** Galones que trae una unidad: columna galones_unidad, la tabla de presentaciones o "… 5 gal" en el nombre. */
+export function galonesDe(p) {
+  if (Number(p?.galones_unidad) > 0) return Number(p.galones_unidad);
+  const pr = presentacionDe(p);
+  if (pr) return pr.galones;
+  const m = /(\d+(?:[.,]\d+)?)\s*gal/i.exec(p?.presentacion || "");
+  return m ? Number(m[1].replace(",", ".")) : null;
+}
 
 export function galCuartos(q) {
   let g = Math.floor(q + 1e-9), c = Math.round((q - g) * 4);
@@ -43,29 +65,53 @@ const fmtNum = new Intl.NumberFormat("es-EC", { maximumFractionDigits: 2 });
 export const num = (n) => fmtNum.format(Number(n) || 0);
 export const r2 = (n) => Math.round((Number(n) || 0) * 100) / 100;
 
-/** "5 galones y 2 cuartos", "14 litros", "3 unidades". */
+/** "5 galones y 2 cuartos" (cantidad en galones). */
+export function galonesTxt(q) {
+  const neg = q < 0; const [g, c] = galCuartos(Math.abs(q));
+  const t = (g || !c ? `${g} ${g === 1 ? "galón" : "galones"}` : "") + (c ? `${g ? " y " : ""}${c} ${c === 1 ? "cuarto" : "cuartos"}` : "");
+  return neg ? `−${t}` : t;
+}
+
+/** "5 galones y 2 cuartos" (Galón), "3 canecas", "2 envases de galón y cuarto", "4 unidades" (filtros). */
 export function cantidadTxt(kind, p, q) {
   q = Number(q) || 0;
-  if (kind === "aceites" && enGalones(p)) {
-    const neg = q < 0; const [g, c] = galCuartos(Math.abs(q));
-    const t = (g || !c ? `${g} ${g === 1 ? "galón" : "galones"}` : "") + (c ? `${g ? " y " : ""}${c} ${c === 1 ? "cuarto" : "cuartos"}` : "");
-    return neg ? `−${t}` : t;
-  }
-  if (kind === "filtros") return `${num(q)} ${q === 1 ? "unidad" : "unidades"}`;
-  const u = (p?.presentacion || "unidad").toLowerCase();
-  return `${num(q)} ${q === 1 ? u : plural(u)}`;
+  if (kind === "aceites" && porCuartos(p)) return galonesTxt(q);
+  if (kind === "filtros") return `${num(q)} ${Math.abs(q) === 1 ? "unidad" : "unidades"}`;
+  const pr = presentacionDe(p);
+  if (pr) return `${num(q)} ${Math.abs(q) === 1 ? pr.una : pr.varias}`;
+  const u = (limpiar(p?.presentacion) || "unidad").toLowerCase();
+  return `${num(q)} ${Math.abs(q) === 1 ? u : plural(u)}`;
 }
 const plural = (u) => (/[aeiouáéíóú]$/.test(u) ? u + "s" : /\d|gal$/.test(u) ? u : u + "es");
 
+/** Equivalencia en galones de q unidades ("= 7 galones y 2 cuartos"), o "" si no aplica. */
+export function equivalenciaTxt(p, q) {
+  if (porCuartos(p)) return "";
+  const g = galonesDe(p);
+  return g ? `= ${galonesTxt(r2((Number(q) || 0) * g))}` : "";
+}
+
+/** Valor de venta de q unidades, igual que valor_aceite() en la base (para mostrar el total antes de guardar). */
+export function valorAceite(p, q) {
+  const pres = p?.presentacion || "", precio = Number(p?.precio) || 0;
+  if (/gal/i.test(pres) && !/caneca|tanque|balde/i.test(pres)) {
+    const [g, c] = galCuartos(q);
+    const pc = Number(p?.precio_cuarto) > 0 ? Number(p.precio_cuarto) : precio / 4;
+    return r2(g * precio + c * pc);
+  }
+  return r2(q * precio);
+}
+
 /**
- * Campos de cantidad: galones + cuartos (aceite en galón) o un solo número.
+ * Campos de cantidad: galones + cuartos (Galón) o unidades enteras (los demás envases y los filtros).
  * Devuelve { el, leer, set(p) } — set cambia el formato si cambia el producto o la presentación.
  */
 export function campoCantidad(kind, p, valor, { label = "Cantidad", name = "cantidad", min = 0, requerido = true } = {}) {
   const el = h("div", { class: "field" });
   let leer = () => 0, modo = null;
+  const modoDe = (prod) => (kind === "aceites" && porCuartos(prod) ? "gal" : `u:${norm(prod?.presentacion)}`);
   const pintar = (prod, v) => {
-    modo = kind === "aceites" && enGalones(prod) ? "gal" : `u:${(prod?.presentacion || "").toLowerCase()}`;
+    modo = modoDe(prod);
     if (modo === "gal") {
       const [g, c] = galCuartos(Math.max(0, Number(v) || 0));
       const gi = input({ type: "number", name: `${name}_g`, min: 0, step: 1, inputmode: "numeric", value: g, required: requerido, "aria-label": `${label}: galones` });
@@ -75,18 +121,16 @@ export function campoCantidad(kind, p, valor, { label = "Cantidad", name = "cant
         h("div", { class: "qty" }, h("label", { class: "qty-g" }, gi, h("span", {}, "galones")), ci));
       leer = () => (Number(gi.value) || 0) + (Number(ci.value) || 0) / 4;
     } else {
-      const unidad = kind === "filtros" ? "unidades" : (prod?.presentacion || "unidades").toLowerCase();
-      const ni = input({ type: "number", name, min, step: "any", inputmode: "decimal", value: v ?? "", required: requerido });
+      const pr = presentacionDe(prod);
+      const unidad = kind === "filtros" ? "unidades" : pr ? pr.varias : (limpiar(prod?.presentacion) || "unidades").toLowerCase();
+      const ni = input({ type: "number", name, min, step: 1, inputmode: "numeric", value: v ?? "", required: requerido });
       el.replaceChildren(h("span", { class: "field-label" }, `${label} (${unidad})`), ni);
       leer = () => Number(ni.value) || 0;
     }
   };
   pintar(p, valor);
   // set: solo se vuelve a armar si cambia el formato (galones ↔ unidades); así no se pierde el foco al escribir
-  const set = (prod) => {
-    const nuevo = kind === "aceites" && enGalones(prod) ? "gal" : `u:${(prod?.presentacion || "").toLowerCase()}`;
-    if (nuevo !== modo) pintar(prod, leer());
-  };
+  const set = (prod) => { if (modoDe(prod) !== modo) pintar(prod, leer()); };
   return { el, leer: () => r2(leer()), set };
 }
 
@@ -140,8 +184,8 @@ export function canonico(valor, conocidos = [], conMayusculas = true) {
 /** Sugerencias de la lavadora (de Supabase): { aceites: {marca: [...], ...}, filtros: {...}, clientes: [...] } */
 export async function cargarSugerencias() {
   const [a, f, ua, uf] = await Promise.all([
-    sb.from("aceites").select("nombre,tipo,marca,presentacion").is("deleted_at", null).limit(2000),
-    sb.from("filtros").select("nombre,tipo,marca,referencia,aplicacion").is("deleted_at", null).limit(2000),
+    sb.from("aceites").select("nombre,tipo,marca,presentacion,sae,uso").is("deleted_at", null).limit(2000),
+    sb.from("filtros").select("nombre,tipo,marca,referencia,aplicacion,rosca").is("deleted_at", null).limit(2000),
     sb.from("usos_aceite").select("cliente").is("deleted_at", null).order("created_at", { ascending: false }).limit(2000),
     sb.from("usos_filtro").select("cliente").is("deleted_at", null).order("created_at", { ascending: false }).limit(2000),
   ]);
@@ -151,7 +195,8 @@ export async function cargarSugerencias() {
   for (const c of KINDS.filtros.sugerencias) S.filtros[c] = col(must(f), c);
   // Valores de siempre al final, para que también se sugieran desde el primer producto
   S.aceites.tipo = unicos([...S.aceites.tipo, ...TIPOS_ACEITE]);
-  S.aceites.presentacion = unicos([...S.aceites.presentacion, ...PRESENTACIONES]);
+  S.aceites.presentacion = unicos([...PRESENTACIONES.map((x) => x.nombre), ...S.aceites.presentacion]);
+  S.aceites.uso = unicos([...S.aceites.uso, ...USOS_ACEITE]);
   S.filtros.tipo = unicos([...S.filtros.tipo, ...TIPOS_FILTRO]);
   S.clientes = unicos([...(must(ua) || []).map((r) => r.cliente), ...(must(uf) || []).map((r) => r.cliente)]);
   // Todas las marcas (aceites y filtros) sirven para los dos

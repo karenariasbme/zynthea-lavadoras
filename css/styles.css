@@ -239,7 +239,7 @@ main.view{max-width:1080px;margin:0 auto;padding:22px 16px 40px}
 
 /* Inicio */
 .hero-saludo{opacity:.85;margin:0 0 2px!important;font-weight:600}
-.rapidos{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+.rapidos{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:16px}
 .rapido{display:flex;align-items:center;gap:12px;text-align:left;cursor:pointer;padding:14px 16px;font:inherit;color:inherit;border:1px solid var(--line)}
 .rapido:hover{border-color:var(--muted)}
 .rapido b{display:block;font-size:16px}
@@ -254,6 +254,45 @@ main.view{max-width:1080px;margin:0 auto;padding:22px 16px 40px}
 .alerta-txt small{color:var(--muted);font-size:13px}
 .alertas .chip{flex:none}
 .ok-txt{color:var(--good);font-weight:600}
+
+/* Paso 8: pestañas internas, filtros, precios y cambios */
+.subtabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-bottom:12px;padding-bottom:2px}
+.subtabs::-webkit-scrollbar{display:none}
+.subtabs button{flex:none;display:flex;align-items:center;gap:6px;border:1.5px solid var(--line);background:var(--surface);color:var(--muted);
+  border-radius:999px;padding:7px 14px;font-weight:600;cursor:pointer;min-height:40px;white-space:nowrap}
+.subtabs button[aria-selected="true"]{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+.subtabs .count{font-size:12px;background:var(--surface-2);color:var(--muted);border-radius:999px;padding:0 7px;line-height:1.6}
+.subtabs button[aria-selected="true"] .count{background:var(--accent);color:var(--accent-ink)}
+.filtros-bar.aceites{grid-template-columns:minmax(160px,1fr) repeat(4,minmax(120px,175px)) auto}
+.filtros-bar.filtros{grid-template-columns:minmax(0,1fr) repeat(2,minmax(0,180px)) auto}
+.filtros-bar.cambios{grid-template-columns:minmax(0,1fr) 180px auto}
+.rosca-box{max-width:420px;margin-bottom:10px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.equiv{color:var(--ink)!important;font-weight:600}
+.prod-precio{font-size:14px}
+.prod-precio .muted,.muted{color:var(--muted)}
+.cambios-lista{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;align-items:start;margin-top:8px}
+.cambio{padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.cambio.borrado{opacity:.75}
+.cambio.borrado .cambio-cli{text-decoration:line-through}
+.cambio-det{display:flex;flex-direction:column;gap:4px;min-width:0}
+.cambio-cli{font-size:17px;overflow-wrap:anywhere}
+.cambio-items{list-style:none;margin:6px 0 0;padding:0;font-size:14px}
+.cambio-items li{display:flex;justify-content:space-between;gap:10px;padding:3px 0;border-top:1px dashed var(--line)}
+.cambio-items li span{min-width:0;overflow-wrap:anywhere}
+.cambio-items li b{flex:none}
+.cambio-total{font-size:16px;border-top:1.5px solid var(--ink)!important}
+.hist-cambio{display:block}
+.cambio-en-cliente>b{display:block;margin-bottom:4px}
+.total-box{display:flex;justify-content:space-between;align-items:center;background:var(--surface-2);border-radius:10px;padding:10px 14px;font-weight:700}
+.total-num{font:700 26px/1 "Barlow Condensed",sans-serif}
+.fila-filtro{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center}
+.fila-filtro-der{display:grid;grid-template-columns:70px 130px auto;gap:6px;align-items:center}
+.nav-mas{display:none}
+.mas-lista{display:flex;flex-direction:column;gap:6px}
+.mas-item{display:flex;align-items:center;gap:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;
+  padding:14px;font:600 16px "Barlow",sans-serif;cursor:pointer;text-align:left}
+.modal-mas{width:min(360px,calc(100% - 24px))}
 
 /* Clientes */
 .cli-buscar{margin-bottom:8px}
@@ -366,6 +405,17 @@ main.wrap-legal{margin-top:-48px}
   .hist-resumen{grid-template-columns:1fr 1fr}
   .prod-lista{grid-template-columns:minmax(0,1fr)}
   .cli-lista{grid-template-columns:minmax(0,1fr)}
+  .menu-mas .nav a.en-mas{display:none}
+  .menu-mas .nav-mas{display:flex;flex:1 1 0;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:58px;padding:6px 0;
+    font-size:10.5px;background:none;border:0;border-top:3px solid transparent;color:inherit;opacity:.78;font-weight:600;cursor:pointer;font-family:inherit}
+  .menu-mas .nav-mas.activo{opacity:1;border-top-color:var(--accent)}
+  .nav-mas svg{width:22px;height:22px;fill:currentColor;stroke:none}
+  .filtros-bar.aceites,.filtros-bar.filtros{grid-template-columns:1fr 1fr}
+  .filtros-bar.aceites .check,.filtros-bar.filtros .check{grid-column:1 / -1}
+  .filtros-bar.cambios{grid-template-columns:1fr auto}
+  .cambios-lista{grid-template-columns:minmax(0,1fr)}
+  .fila-filtro{grid-template-columns:1fr}
+  .fila-filtro-der{grid-template-columns:70px 1fr auto}
   .admin-tabs{display:grid;grid-template-columns:1fr 1fr;overflow:visible}
   .admin-tabs a{padding:8px 6px}
 }

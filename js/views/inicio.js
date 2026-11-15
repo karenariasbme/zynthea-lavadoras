@@ -1,9 +1,10 @@
 // Inicio: saludo con el logo, alertas de stock bajo y accesos rápidos.
 import { h } from "../util.js";
-import { state, esDueno } from "../state.js";
+import { state, esDueno, planIncluye } from "../state.js";
 import { lavadoraLogo, icono } from "../ui.js";
 import { KINDS, cantidadTxt } from "../stock.js";
 import { cargarProductos, estado, chipEstado, abrirUso, abrirEditor } from "./productos.js";
+import { abrirNuevoCambio } from "./cambios.js";
 
 export async function render(box) {
   const l = state.lavadora;
@@ -30,6 +31,7 @@ export async function render(box) {
         h("p", {}, `${aceites.length} ${aceites.length === 1 ? "aceite" : "aceites"} · ${filtros.length} ${filtros.length === 1 ? "filtro" : "filtros"}`))),
 
     h("div", { class: "rapidos" },
+      planIncluye("PRO") && accion("cambio", "Nuevo cambio", "Aceite, filtros y mano de obra", () => abrirNuevoCambio({ onDone: recargar })),
       accion("uso", "Registrar uso", "Aceite o filtro usado", () => abrirUso({ kind: null, recargar }, null)),
       accion("aceite", "Agregar aceite", "Con su stock inicial", () => abrirEditor({ kind: "aceites", recargar }, null)),
       accion("filtro", "Agregar filtro", "Con su stock inicial", () => abrirEditor({ kind: "filtros", recargar }, null))),
