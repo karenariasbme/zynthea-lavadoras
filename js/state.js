@@ -3,7 +3,7 @@ export const LAVADORA_COLS = "id,nombre,logo_path,color_primario,color_acento,ma
 // Estado compartido de la app (se llena en app.js al iniciar)
 export const state = {
   email: "",              // correo del usuario
-  acceso: null,           // respuesta de solicitar_acceso(): { estado, nota, lavadora_id, plan, rol }
+  acceso: null,           // respuesta de solicitar_acceso(): { estado, nota, lavadora_id, plan, rol, admin }
   lavadora: null,         // { id, nombre, logo_path, color_primario, color_acento, mano_obra, plan }
   refresh: () => {},      // vuelve a pintar la pantalla actual
   updateChrome: () => {}, // vuelve a pintar logo, nombre y colores

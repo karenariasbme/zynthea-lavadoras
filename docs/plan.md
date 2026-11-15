@@ -14,6 +14,7 @@ Schema: `public` (el proyecto es solo de lavadoras).
 | 4d | `005`: autor (`created_by`) a null cuando se elimina una cuenta (encontrado en la prueba de restauración del paso 5) | ✅ Ejecutado (03/11/2026, con respaldo previo de las 18:20) |
 | 5 | zynthea-ops para los dos proyectos | ✅ Respaldo, restauración de prueba y reporte verificados (03/11/2026) |
 | 6 | App parte 1 (login, pendiente, Mi lavadora) + mover la demo a `/demo/` + configuración de Auth | ✅ Parte 1 en `main` y probada en GitHub Pages con lavpend, lavbas y lavpro, a 375 px y en escritorio. Auth verificado: "Continuar con Google" con una cuenta nueva y registro de +lavnuevo con confirmación por correo, ambos en "Tu acceso está en revisión" (15/11/2026). Queda para antes del primer cliente real: SMTP propio + plantillas en español |
+| 6b | Panel de administración en la app + `006` (admins, invitaciones, funciones `admin_*`) | 🟡 006 ejecutado con respaldo y restauración de prueba previos (15/11/2026); clientes rechazados por las 10 funciones `admin_*` (lavpend, lavbas). Admin: `karenarias.bme@gmail.com`. Panel en la rama `panel-admin`, probado con datos simulados a 375 px y escritorio. Falta: prueba real de Karen con su cuenta y unir a `main` |
 | 7–9 | App: Básico → Estándar/Profesional/Premium, prueba completa y publicación | Pendiente |
 | 10 | Migrar DI-KAR (Premium) | Pendiente |
 

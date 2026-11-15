@@ -4,16 +4,17 @@ import { state, LAVADORA_COLS } from "./state.js";
 import { loading, errorBox, lavadoraLogo, waIcon, aplicarColores } from "./ui.js";
 import * as inicio from "./views/inicio.js";
 import * as lavadora from "./views/lavadora.js";
+import * as admin from "./views/admin.js";
 
 const $ = (id) => document.getElementById(id);
 
-// Parte 1: solo Inicio y Mi lavadora
-const routes = { inicio: inicio.render, lavadora: lavadora.render };
+// Parte 1: solo Inicio y Mi lavadora. La administradora solo tiene el panel (#admin/<pestaña>).
+let routes = { inicio: inicio.render, lavadora: lavadora.render };
 
 let seq = 0;
 async function route() {
   const name = location.hash.replace(/^#/, "").split("/")[0];
-  const key = routes[name] ? name : "inicio";
+  const key = routes[name] ? name : Object.keys(routes)[0];
   for (const a of document.querySelectorAll("#nav a")) {
     if (a.dataset.route === key) a.setAttribute("aria-current", "page");
     else a.removeAttribute("aria-current");
@@ -150,6 +151,8 @@ async function init() {
   }
   state.acceso = acceso;
 
+  if (acceso.admin) return iniciarAdmin();
+
   if (acceso.estado === "pendiente") return showPendiente(state.email);
   if (acceso.estado !== "aprobado") return showSinAcceso(state.email, acceso.estado, acceso.nota);
   // Aprobado pero sin lavadora activa (p. ej. personal de una lavadora suspendida)
@@ -158,6 +161,21 @@ async function init() {
   state.lavadora = must(await sb.from("lavadoras").select(LAVADORA_COLS).eq("id", acceso.lavadora_id).single());
 
   updateChrome();
+  $("logoutBtn").addEventListener("click", logout);
+  $("splash").hidden = true;
+  $("shell").hidden = false;
+  window.addEventListener("hashchange", route);
+  route();
+}
+
+/** Cuenta de administradora: barra con "Panel de administración" y solo la ruta del panel. */
+function iniciarAdmin() {
+  routes = { admin: admin.render };
+  $("lavLogo").replaceChildren(h("i", { class: "brand-mark", "aria-hidden": "true" }));
+  $("lavNombre").textContent = "Sistema para Lavadoras";
+  document.querySelector(".top-brand").setAttribute("href", "#admin");
+  $("nav").hidden = true;
+  document.title = "Panel · Sistema para Lavadoras";
   $("logoutBtn").addEventListener("click", logout);
   $("splash").hidden = true;
   $("shell").hidden = false;
