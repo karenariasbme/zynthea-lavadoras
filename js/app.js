@@ -5,15 +5,17 @@ import { loading, errorBox, lavadoraLogo, waIcon, aplicarColores } from "./ui.js
 import * as inicio from "./views/inicio.js";
 import * as productos from "./views/productos.js";
 import * as config from "./views/config.js";
+import * as clientes from "./views/clientes.js";
 import * as admin from "./views/admin.js";
 
 const $ = (id) => document.getElementById(id);
 
-// Plan Básico: Inicio, Aceites, Filtros y Configuración. La administradora solo tiene el panel (#admin/<pestaña>).
+// Plan Básico: Inicio, Aceites, Filtros, Clientes y Configuración. La administradora solo tiene el panel (#admin/<pestaña>).
 let routes = {
   inicio: inicio.render,
   aceites: (box) => productos.render(box, "aceites"),
   filtros: (box) => productos.render(box, "filtros"),
+  clientes: clientes.render,
   config: config.render,
 };
 const ALIAS = { lavadora: "config" };   // enlaces viejos a "Mi lavadora"
@@ -171,7 +173,6 @@ async function init() {
 
   updateChrome();
   $("logoutBtn").addEventListener("click", logout);
-  $("logoutNav").addEventListener("click", logout);
   $("splash").hidden = true;
   $("shell").hidden = false;
   window.addEventListener("hashchange", route);

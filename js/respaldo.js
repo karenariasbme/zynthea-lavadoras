@@ -113,7 +113,7 @@ function cargarXLSX() {
 }
 
 /** Lee todas las filas de una consulta, de 1000 en 1000. */
-async function todo(consulta) {
+export async function todo(consulta) {
   const filas = [];
   for (let i = 0; ; i += 1000) {
     const parte = must(await consulta().range(i, i + 999));

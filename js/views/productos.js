@@ -235,7 +235,7 @@ export function abrirEntrada(ctx, p) {
  * Registra aceite o filtros usados con registrar_uso(). Si p es null, se elige el producto en la ventana;
  * si además ctx.kind es null (desde Inicio), también se elige si es aceite o filtro.
  */
-export async function abrirUso(ctx, p) {
+export async function abrirUso(ctx, p, { cliente = "" } = {}) {
   const elegirTipo = !ctx.kind;
   let kind = ctx.kind || "aceites";
   const S = ctx.S || await cargarSugerencias();
@@ -298,7 +298,7 @@ export async function abrirUso(ctx, p) {
       p && !elegirTipo ? h("p", { class: "uso-prod" }, h("b", {}, p.nombre), p.marca ? ` · ${p.marca}` : "") : prodField,
       p && !elegirTipo && h("div", { hidden: true }, prodSel),
       disp,
-      h("div", { class: "cols" }, field("Fecha *", fecha), field("Cliente *", inputSugerido({ name: "cliente", required: true, maxlength: 120, placeholder: "Nombre del cliente" }, S.clientes))),
+      h("div", { class: "cols" }, field("Fecha *", fecha), field("Cliente *", inputSugerido({ name: "cliente", required: true, maxlength: 120, placeholder: "Nombre del cliente", value: cliente }, S.clientes))),
       h("div", { class: "cols" }, cantBox, claseField),
       extraBox,
     ],
