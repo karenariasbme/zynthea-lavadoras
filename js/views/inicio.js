@@ -44,7 +44,7 @@ export async function render(box) {
             h("a", { href: `#${kind}/bajo` },
               h("span", { class: "alerta-ico" }, icono(KINDS[kind].icono)),
               h("span", { class: "alerta-txt" }, h("b", {}, p.nombre),
-                h("small", {}, [p.marca, KINDS[kind].Uno, `quedan ${cantidadTxt(kind, p, p.actual)}`].filter(Boolean).join(" · "))),
+                h("small", {}, [KINDS[kind].Uno, `quedan ${cantidadTxt(kind, p, p.actual)}`].filter(Boolean).join(" · "))),
               chipEstado(estado(p))))))
         : h("p", { class: "ok-txt" }, aceites.length + filtros.length
             ? "Todo el stock está por encima del mínimo."

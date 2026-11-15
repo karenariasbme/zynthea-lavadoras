@@ -195,7 +195,10 @@ main.view{max-width:1080px;margin:0 auto;padding:22px 16px 40px}
 .prod.bajo{border-left-color:var(--warn)}
 .prod.agotado{border-left-color:var(--bad)}
 .prod h3{font-size:21px;overflow-wrap:anywhere}
-.prod-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.prod-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.prod-top h3{min-width:0}
+.prod-top .chip{flex:none;margin-top:3px}
+.prod>.chips{margin:0}
 .prod-det{color:var(--muted);font-size:14px;overflow-wrap:anywhere}
 .prod-stock{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-top:4px}
 .prod-stock b{font:700 26px/1.1 "Barlow Condensed",sans-serif}

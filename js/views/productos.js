@@ -167,17 +167,13 @@ function tarjeta(ctx, p) {
   const actual = Number(p.actual) || 0, minimo = Number(p.minimo) || 0;
   const pct = Math.max(0, Math.min(100, minimo > 0 ? (actual / (minimo * 2)) * 100 : actual > 0 ? 100 : 0));
   const extras = extraTxt(ctx.campos, p.extra);
-  const det = kind === "aceites"
-    ? [p.marca, p.sae, p.presentacion].filter(Boolean).join(" · ")
-    : [p.marca, p.referencia && `Código ${p.referencia}`, p.rosca && `Rosca ${p.rosca}`].filter(Boolean).join(" · ");
+  const etiquetas = kind === "aceites"
+    ? [p.tipo, p.uso, p.presentacion]
+    : [p.tipo, p.rosca && `Rosca ${p.rosca}`, p.aplicacion];
   const equiv = kind === "aceites" ? equivalenciaTxt(p, actual) : "";
   return h("article", { class: `card prod ${e}` },
-    h("div", { class: "prod-top" },
-      h("span", { class: "chips" }, p.tipo && h("span", { class: "chip tipo" }, p.tipo), kind === "aceites" && p.uso && h("span", { class: "chip tipo" }, p.uso)),
-      chipEstado(e)),
-    h("h3", {}, p.nombre),
-    det && h("p", { class: "prod-det" }, det),
-    kind === "filtros" && p.aplicacion && h("p", { class: "prod-det" }, "Para: ", p.aplicacion),
+    h("div", { class: "prod-top" }, h("h3", {}, tituloProducto(kind, p)), chipEstado(e)),
+    h("p", { class: "chips" }, etiquetas.filter(Boolean).map((t) => h("span", { class: "chip tipo" }, t))),
     h("div", { class: "prod-stock" },
       h("b", {}, cantidadTxt(kind, p, actual)),
       equiv && h("span", { class: "equiv" }, equiv),
@@ -190,6 +186,17 @@ function tarjeta(ctx, p) {
       h("button", { class: "btn sm", type: "button", onclick: () => abrirEntrada(ctx, p) }, "Agregar stock"),
       h("button", { class: "btn sm", type: "button", onclick: () => abrirHistorial(ctx, p) }, "Historial"),
       h("button", { class: "btn sm", type: "button", onclick: () => abrirEditor(ctx, p) }, "Editar")));
+}
+
+/** Título que se muestra: aceite "Marca SAE"; filtro "Marca Código". */
+export function tituloProducto(kind, p) {
+  const t = (kind === "aceites" ? [p.marca, p.sae] : [p.marca, p.referencia]).map(limpiar).filter(Boolean).join(" ");
+  return t || p.nombre || "";
+}
+/** Nombre guardado en la base (no se pide): "Marca SAE Presentación" / "Marca Código". */
+export function nombreAuto(kind, d) {
+  const partes = kind === "aceites" ? [d.marca, d.sae, d.presentacion] : [d.marca, d.referencia || (d.tipo && `filtro de ${d.tipo.toLowerCase()}`)];
+  return partes.map(limpiar).filter(Boolean).join(" ").slice(0, 120);
 }
 
 // ---------- Agregar / editar ----------
@@ -232,14 +239,16 @@ export async function abrirEditor(ctx, p) {
   if (!dueno && !nuevo) inicial.el.querySelectorAll("input,select").forEach((x) => { x.disabled = true; });
   const ex = camposExtra(campos, p?.extra);
 
+  // Orden pedido. Aceite: Marca, SAE, Tipo, Uso, Presentación, stock, aviso, compra, venta.
+  // Filtro: Marca, Código, Rosca, Tipo, Para qué vehículos, stock, aviso, compra, venta.
   const campos_ = kind === "aceites" ? [
     h("div", { class: "cols" }, sug("marca", "Marca *", S.marcas, { required: true }), sug("sae", "SAE / viscosidad", S.aceites.sae, { placeholder: "Ej.: 20W-50" })),
     h("div", { class: "cols" }, field("Tipo", selectLista("tipo", TIPOS_ACEITE, p?.tipo, "—")), sug("uso", "Uso", S.aceites.uso, { placeholder: "Motor, Caja…" })),
     field("Presentación *", presSel, equivNota),
     h("div", { class: "cols" }, inicial.el, minimo.el),
   ] : [
-    h("div", { class: "cols" }, sug("marca", "Marca *", S.marcas, { required: true }), sug("rosca", "Rosca", S.filtros.rosca, { placeholder: "Ej.: 3/4-16" })),
-    h("div", { class: "cols" }, sug("referencia", "Referencia / código", S.filtros.referencia), field("Tipo", selectLista("tipo", TIPOS_FILTRO, p?.tipo, "—"))),
+    h("div", { class: "cols" }, sug("marca", "Marca *", S.marcas, { required: true }), sug("referencia", "Código / referencia", S.filtros.referencia, { placeholder: "Ej.: 0986AF0051" })),
+    h("div", { class: "cols" }, sug("rosca", "Rosca", S.filtros.rosca, { placeholder: "Ej.: 3/4-16" }), field("Tipo", selectLista("tipo", TIPOS_FILTRO, p?.tipo, "—"))),
     sug("aplicacion", "Para qué vehículos", S.filtros.aplicacion, { placeholder: "Ej.: Toyota Hilux / Isuzu" }),
     h("div", { class: "cols" }, inicial.el, minimo.el),
   ];
@@ -248,7 +257,6 @@ export async function abrirEditor(ctx, p) {
       field("Precio de compra (USD)", precioInput("precio_compra", p?.precio_compra, !dueno)),
       field(kind === "aceites" ? "Precio de venta por envase (USD)" : "Precio de venta (USD)", precioInput("precio", p?.precio, !dueno))),
     conPrecios && precioCuartoField,
-    sug("nombre", "Nombre (opcional)", S[kind].nombre, { placeholder: kind === "aceites" ? "Se arma solo: Marca SAE Presentación" : "Se arma solo: Filtro de … Marca Código" }),
     !nuevo && h("p", { class: "note" },
       `Entradas: ${cantidadTxt(kind, p, p.entradas)} · Usado: ${cantidadTxt(kind, p, usado)} · Stock actual: ${cantidadTxt(kind, p, p.actual)}`),
     ex.nodos,
@@ -278,14 +286,16 @@ export async function abrirEditor(ctx, p) {
         datos.referencia = canonico(fd.get("referencia"), [], false);
         datos.aplicacion = canonico(fd.get("aplicacion"), [], false);
       }
-      datos.nombre = canonico(fd.get("nombre"), [], false) || (kind === "aceites"
-        ? [datos.marca, datos.sae, datos.presentacion].filter(Boolean).join(" ")
-        : ["Filtro", datos.tipo && `de ${datos.tipo.toLowerCase()}`, datos.marca, datos.referencia].filter(Boolean).join(" "));
-      // Sin duplicados: mismo nombre y marca (y presentación o código), sin mirar mayúsculas ni tildes
-      const clave = (x) => [x.nombre, x.marca, kind === "aceites" ? x.presentacion : x.referencia].map(norm).join("|");
+      // El nombre no se pide ni se muestra: se guarda armado (Marca SAE Presentación / Marca Código) para lo que ya lo usa
+      datos.nombre = nombreAuto(kind, datos);
+      // Sin duplicados (sin mirar mayúsculas ni tildes). Aceite: marca, SAE, tipo, uso y presentación.
+      // Filtro: marca y código (sin código: marca, rosca, tipo y vehículos).
+      const clave = (x) => (kind === "aceites"
+        ? [x.marca, x.sae, x.tipo, x.uso, x.presentacion]
+        : x.referencia ? [x.marca, x.referencia] : [x.marca, x.rosca, x.tipo, x.aplicacion]).map((v) => norm(limpiar(v))).join("|");
       const lista = ctx.lista?.length ? ctx.lista : await cargarProductos(kind);
       const repetido = lista.find((x) => x.id !== p?.id && clave(x) === clave(datos));
-      if (repetido) throw userError(`Ya existe «${repetido.nombre}»${repetido.marca ? ` de ${repetido.marca}` : ""}. Para sumar unidades usa "Agregar stock".`);
+      if (repetido) throw userError(`Ya existe «${tituloProducto(kind, repetido)}»${kind === "aceites" ? ` (${[repetido.tipo, repetido.uso, repetido.presentacion].filter(Boolean).join(" · ")})` : ""}. Para sumar unidades usa "Agregar stock".`);
       if (nuevo || dueno) {
         datos.stock_inicial = inicial.leer();
         if (datos.stock_inicial < 0) throw userError("El stock inicial no puede ser negativo.");
@@ -301,7 +311,7 @@ export async function abrirEditor(ctx, p) {
       if (nuevo) must(await sb.from(K.tabla).insert(datos).select("id").single());
       else must(await sb.from(K.tabla).update(datos).eq("id", p.id).select("id").single());
       await ctx.recargar?.();
-      return nuevo ? `${K.Uno} agregado: ${datos.nombre}` : "Cambios guardados";
+      return nuevo ? `${K.Uno} agregado: ${tituloProducto(kind, datos)}` : "Cambios guardados";
     },
   });
 }
@@ -310,7 +320,7 @@ function confirmarBorrar(ctx, p, despues) {
   const K = KINDS[ctx.kind];
   ventana({
     titulo: `Borrar ${K.uno}`, boton: "Borrar", peligro: true,
-    texto: `${p.nombre}${p.marca ? ` · ${p.marca}` : ""}. Desaparece de la lista; si tiene usos registrados, primero hay que borrarlos desde el Historial.`,
+    texto: `${p.nombre}. Desaparece de la lista; si tiene usos registrados, primero hay que borrarlos desde el Historial.`,
     onSubmit: async () => {
       must(await sb.rpc("borrar", { p_tabla: K.tabla, p_id: p.id }));
       despues?.();
@@ -328,7 +338,7 @@ export function abrirEntrada(ctx, p) {
   const { kind } = ctx, K = KINDS[kind];
   const cant = campoCantidad(kind, p, kind === "aceites" && enGalones(p) ? 0 : "", { label: "Cantidad que llegó" });
   ventana({
-    titulo: "Agregar stock", texto: `${p.nombre}${p.marca ? ` · ${p.marca}` : ""} · ahora hay ${cantidadTxt(kind, p, p.actual)}.`,
+    titulo: "Agregar stock", texto: `${p.nombre} · ahora hay ${cantidadTxt(kind, p, p.actual)}.`,
     boton: "Agregar", campos: [cant.el],
     onSubmit: async () => {
       const q = cant.leer();
@@ -387,7 +397,7 @@ export async function abrirUso(ctx, p, { cliente = "" } = {}) {
     const disponibles = listas[kind].filter((x) => Number(x.actual) > 0 || x.id === p?.id);
     prodSel.replaceChildren(h("option", { value: "" }, disponibles.length ? "Elige…" : `No hay ${KINDS[kind].titulo.toLowerCase()} con stock`),
       ...disponibles.map((x) => h("option", { value: x.id, selected: x.id === p?.id },
-        [x.nombre, x.marca, `${cantidadTxt(kind, x, x.actual)}`].filter(Boolean).join(" · "))));
+        [x.nombre, `quedan ${cantidadTxt(kind, x, x.actual)}`].filter(Boolean).join(" · "))));
     claseField.hidden = kind !== "filtros";
     ex = camposExtra(camposUso[kind] || []);
     extraBox.replaceChildren(...ex.nodos);
@@ -412,7 +422,7 @@ export async function abrirUso(ctx, p, { cliente = "" } = {}) {
     texto: p && !elegirTipo ? null : "Elige el producto: el stock se resta solo.",
     campos: [
       elegirTipo && tipoBox,
-      p && !elegirTipo ? h("p", { class: "uso-prod" }, h("b", {}, p.nombre), p.marca ? ` · ${p.marca}` : "") : prodField,
+      p && !elegirTipo ? h("p", { class: "uso-prod" }, h("b", {}, p.nombre)) : prodField,
       p && !elegirTipo && h("div", { hidden: true }, prodSel),
       disp,
       h("div", { class: "cols" }, field("Fecha *", fecha), field("Cliente *", inputSugerido({ name: "cliente", required: true, maxlength: 120, placeholder: "Nombre del cliente", value: cliente }, S.clientes))),
