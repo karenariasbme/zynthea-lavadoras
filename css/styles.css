@@ -209,7 +209,11 @@ main.view{max-width:1080px;margin:0 auto;padding:22px 16px 40px}
 .chip.warn{background:var(--warn-soft);color:var(--warn)}
 .chip.tipo{background:var(--surface-2);color:var(--muted);border:1px solid var(--line)}
 .cols>*{min-width:0}
-.sugerido{display:block}
+.sugerido{display:block;position:relative}
+.sug-lista{position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:5;list-style:none;margin:0;padding:4px;background:var(--surface);
+  border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.14);max-height:240px;overflow:auto}
+.sug-lista li{padding:9px 10px;border-radius:7px;cursor:pointer;overflow-wrap:anywhere}
+.sug-lista li:hover,.sug-lista li[aria-selected="true"]{background:var(--surface-2)}
 .qty{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .qty-g{position:relative;display:block}
 .qty-g .input{padding-right:78px}
@@ -260,6 +264,17 @@ main.view{max-width:1080px;margin:0 auto;padding:22px 16px 40px}
 .cfg-datos>div:only-child{grid-column:1 / -1}
 .incluye{margin:6px 0 0;padding-left:20px}
 .incluye li{margin-bottom:4px}
+
+.audit{list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.audit:empty{display:none}
+.audit-fila{padding:10px 12px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:3px;min-width:0}
+.audit-fila:first-child{border-top:0}
+.audit-cab{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.audit-cab b{overflow-wrap:anywhere}
+.audit-cambios{margin:2px 0 0;padding-left:18px;font-size:14px}
+.audit-cambios li{overflow-wrap:anywhere}
+.audit-campo{color:var(--muted)}
+.audit-cambios s{color:var(--muted)}
 
 /* Menú: "Salir" va en la barra inferior del celular */
 .nav-salir{display:none}

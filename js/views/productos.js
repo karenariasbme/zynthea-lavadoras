@@ -154,7 +154,7 @@ export async function abrirEditor(ctx, p) {
   const editor = ventana({
     titulo: nuevo ? K.nuevo : `Editar ${K.uno}`, boton: nuevo ? "Agregar" : "Guardar", campos: campos_, izquierda: borrarBtn, clase: "modal-ancho",
     onSubmit: async (fd) => {
-      const nombre = canonico(fd.get("nombre"), S[kind].nombre);
+      const nombre = canonico(fd.get("nombre"), [], false);   // se respeta lo escrito ("5W-30")
       if (!nombre) throw userError("Escribe el nombre.");
       const datos = {
         nombre,
@@ -167,9 +167,14 @@ export async function abrirEditor(ctx, p) {
         datos.presentacion = canonico(fd.get("presentacion"), S.aceites.presentacion);
         if (!datos.presentacion) throw userError("Escribe la presentación (por ejemplo, Galón).");
       } else {
-        datos.referencia = canonico(fd.get("referencia"), S.filtros.referencia);
-        datos.aplicacion = canonico(fd.get("aplicacion"), S.filtros.aplicacion);
+        datos.referencia = canonico(fd.get("referencia"), [], false);   // código tal cual ("PH3593A")
+        datos.aplicacion = canonico(fd.get("aplicacion"), [], false);
       }
+      // Sin duplicados: mismo nombre y marca (y presentación o código), sin mirar mayúsculas ni tildes
+      const clave = (x) => [x.nombre, x.marca, kind === "aceites" ? x.presentacion : x.referencia].map(norm).join("|");
+      const lista = ctx.lista?.length ? ctx.lista : await cargarProductos(kind);
+      const repetido = lista.find((x) => x.id !== p?.id && clave(x) === clave(datos));
+      if (repetido) throw userError(`Ya existe «${repetido.nombre}»${repetido.marca ? ` de ${repetido.marca}` : ""}. Para sumar unidades usa "Agregar stock".`);
       if (nuevo || dueno) {
         datos.stock_inicial = inicial.leer();
         if (datos.stock_inicial < 0) throw userError("El stock inicial no puede ser negativo.");

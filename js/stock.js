@@ -100,12 +100,15 @@ export const momentoTxt = (iso) => fmtMomento.format(new Date(iso));
 // ---------- Búsqueda (sin mayúsculas ni tildes) ----------
 export const norm = (s) => String(s ?? "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
 
-// ---------- Textos: limpiar y memoria al escribir ----------
+// ---------- Textos: limpiar, mayúsculas y memoria al escribir ----------
 /** Quita espacios al inicio, al final y repetidos. */
 export const limpiar = (s) => String(s ?? "").replace(/\s+/g, " ").trim();
 
+/** Primera letra de cada palabra en mayúscula; el resto como lo escribió ("mobil" → "Mobil", "BMW" sigue "BMW"). */
+export const mayusculas = (s) => limpiar(s).replace(/(^|[\s/(-])(\p{Ll})/gu, (_, a, b) => a + b.toUpperCase());
+
 /**
- * Valores ya usados en la lavadora (sin repetir por mayúsculas), del más usado al menos usado.
+ * Valores ya usados en la lavadora, sin repetir por mayúsculas ni tildes, del más usado al menos usado.
  * La forma que se muestra es la más frecuente ("Mobil" gana a "mobil").
  */
 function unicos(valores) {
@@ -113,7 +116,7 @@ function unicos(valores) {
   for (const v0 of valores) {
     const v = limpiar(v0);
     if (!v) continue;
-    const k = v.toLowerCase();
+    const k = norm(v);
     const g = grupos.get(k) || { n: 0, formas: new Map() };
     g.n++; g.formas.set(v, (g.formas.get(v) || 0) + 1);
     grupos.set(k, g);
@@ -122,11 +125,16 @@ function unicos(valores) {
     .map((g) => [...g.formas.entries()].sort((a, b) => b[1] - a[1])[0][0]);
 }
 
-/** Si ya existe el mismo texto con otras mayúsculas, se usa el que existe (no se duplica "Mobil" y "mobil"). */
-export function canonico(valor, conocidos = []) {
+/**
+ * Texto listo para guardar.
+ * · Marca, tipo, presentación y cliente (conMayusculas): si ya existe igual sin mirar mayúsculas ni tildes,
+ *   se usa el que existe ("mobil " → "Mobil"); si es nuevo, primera letra de cada palabra en mayúscula.
+ * · Nombre, código y aplicación: solo se quitan espacios extra; se respeta lo escrito ("PH3593A", "5W-30").
+ */
+export function canonico(valor, conocidos = [], conMayusculas = true) {
   const v = limpiar(valor);
-  if (!v) return "";
-  return conocidos.find((c) => c.toLowerCase() === v.toLowerCase()) || v;
+  if (!v || !conMayusculas) return v;
+  return conocidos.find((c) => norm(c) === norm(v)) || mayusculas(v);
 }
 
 /** Sugerencias de la lavadora (de Supabase): { aceites: {marca: [...], ...}, filtros: {...}, clientes: [...] } */
@@ -151,13 +159,45 @@ export async function cargarSugerencias() {
   return S;
 }
 
-let dlSeq = 0;
-/** Campo de texto con memoria: sugiere los valores ya usados mientras se escribe. */
+let sugSeq = 0;
+/**
+ * Campo de texto con memoria: mientras se escribe, muestra los valores ya usados que contienen lo escrito,
+ * sin mirar mayúsculas ni tildes ("mo" → "Mobil", "perez" → "Juan Pérez"). Flechas, Enter y Esc.
+ * (El datalist del navegador no ignora las tildes, por eso es una lista propia.)
+ */
 export function inputSugerido(props, valores = []) {
-  const id = `dl-${++dlSeq}`;
-  const dl = h("datalist", { id }, valores.slice(0, 300).map((v) => h("option", { value: v })));
-  const el = input({ autocomplete: "off", spellcheck: "false", ...props, list: id });
-  return h("span", { class: "sugerido" }, el, dl);
+  const id = `sug-${++sugSeq}`;
+  const el = input({ autocomplete: "off", spellcheck: "false", ...props, role: "combobox",
+    "aria-autocomplete": "list", "aria-expanded": "false", "aria-controls": id });
+  const lista = h("ul", { class: "sug-lista", id, role: "listbox", hidden: true });
+  let items = [], idx = -1;
+  const cerrar = () => { lista.hidden = true; el.setAttribute("aria-expanded", "false"); idx = -1; };
+  const marcar = () => lista.querySelectorAll("li").forEach((li, i) => li.setAttribute("aria-selected", String(i === idx)));
+  const elegir = (v) => { el.value = v; cerrar(); el.dispatchEvent(new Event("input", { bubbles: true })); el.dispatchEvent(new Event("change", { bubbles: true })); };
+  const abrir = (todos = false) => {
+    const q = norm(limpiar(el.value));
+    const empieza = [], contiene = [];
+    for (const v of valores) {
+      const n = norm(v);
+      if (!todos && (!q || n === q)) continue;
+      if (!q || n.startsWith(q)) empieza.push(v); else if (n.includes(q)) contiene.push(v);
+    }
+    items = [...empieza, ...contiene].slice(0, 8);
+    idx = -1;
+    if (!items.length) return cerrar();
+    lista.replaceChildren(...items.map((v) => h("li", { role: "option", "aria-selected": "false",
+      onmousedown: (e) => { e.preventDefault(); elegir(v); } }, v)));
+    lista.hidden = false; el.setAttribute("aria-expanded", "true");
+  };
+  el.addEventListener("input", (e) => { if (e.isTrusted) abrir(); });
+  el.addEventListener("blur", () => setTimeout(cerrar, 100));
+  el.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowDown") { e.preventDefault(); if (lista.hidden) abrir(true); else { idx = Math.min(idx + 1, items.length - 1); marcar(); } }
+    else if (e.key === "ArrowUp" && !lista.hidden) { e.preventDefault(); idx = Math.max(idx - 1, 0); marcar(); }
+    else if (e.key === "Enter" && !lista.hidden && idx >= 0) { e.preventDefault(); elegir(items[idx]); }
+    else if (e.key === "Escape" && !lista.hidden) { e.preventDefault(); e.stopPropagation(); cerrar(); }
+  });
+  return h("span", { class: "sugerido" }, el, lista);
 }
 
 // ---------- Campos personalizados (extra) ----------

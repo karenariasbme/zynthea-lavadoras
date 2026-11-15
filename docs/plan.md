@@ -73,8 +73,12 @@ Verificado: BAS → PRO → BAS → PRO deja la huella (md5) de todos los datos 
 
 - Usa lo que ya existe: vistas `stock_aceites` / `stock_filtros` (stock actual), `registrar_uso()`, `borrar()` (nunca DELETE), `extra` + `campos_personalizados`, auditoría.
 - **Agregar stock (entradas)** sin migración: la app guarda `entradas + cantidad` solo si `entradas` no cambió desde que se leyó (si cambió, vuelve a leer y reintenta hasta 3 veces). La auditoría registra el antes y el después, y el Historial lo muestra.
-- **Memoria al escribir**: sugerencias desde Supabase (productos y clientes ya guardados), sin distinguir mayúsculas. Al guardar se quitan espacios extra y, si el texto ya existe con otras mayúsculas, se usa el existente ("mobil " → "Mobil").
-- Precios, valor de cada uso y Excel son del plan Estándar: no se muestran en el Básico. La cantidad de aceite sí se muestra en galones y cuartos (pedido de la clienta), aunque la página de planes pone "galones y cuartos, con precio" en el Estándar.
+- **Memoria al escribir**: sugerencias desde Supabase (productos y clientes ya guardados), comparando sin mayúsculas ni tildes (lista propia: el datalist del navegador no ignora tildes).
+- **Normalización al guardar**: marca, tipo, presentación y cliente → si ya existe (sin mayúsculas ni tildes) se usa el existente; si es nuevo, primera letra de cada palabra en mayúscula ("mobil" → "Mobil"). Nombre, código y aplicación: solo se quitan espacios extra ("PH3593A", "5W-30" tal cual). No se puede crear un producto repetido (mismo nombre, marca y presentación/código).
+- **Configuración → Historial de cambios**: la auditoría de la lavadora (fecha, usuario, qué cambió, antes → después) con buscador. La lee el dueño por la política `auditoria_dueno` del 001; el personal (Premium) no la ve.
+- **Configuración → Descargar mis datos** (todos los planes): Excel de respaldo con lavadora, aceites, filtros, usos (también los borrados, marcados) e historial. No son los reportes del Estándar; los precios solo salen desde el Estándar.
+- Borrar un uso no lo elimina: queda con `deleted_at` y como `BORRADO` en la auditoría (verificado 15/11/2026).
+- Precios, valor de cada uso y los reportes en Excel son del plan Estándar. Galones y cuartos (cantidad) quedan en el Básico; la landing se actualiza en la rama `lavadoras-galones-basico` del repo KarenArias.
 
 **Pendiente para el paso 8 (con respaldo + restauración de prueba antes):**
 - Función `registrar_entrada(p_tabla, p_id, p_cantidad)` en la base (suma atómica `entradas = entradas + n`, valida plan y rol) para Premium con varios usuarios. La app pasará a usarla en lugar de la suma desde el navegador.
