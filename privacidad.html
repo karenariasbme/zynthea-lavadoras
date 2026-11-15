@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Política de privacidad · Sistema para Lavadoras</title>
+<meta name="description" content="Política de privacidad del Sistema para Lavadoras · Zynthea Solutions: qué datos se recogen, para qué se usan, cómo se protegen y respaldan, y cómo ejercer tus derechos.">
+<meta name="theme-color" content="#0F2E44">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Cpath d=%22M0 8a8 8 0 0 1 8-8h24L0 32z%22 fill=%22%23D0911C%22/%3E%3Cpath d=%22M32 24a8 8 0 0 1-8 8H0L32 0z%22 fill=%22%233D8FD6%22/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<header class="legal-head">
+  <div class="wrap-legal">
+    <a class="brand" href="index.html"><i class="brand-mark" aria-hidden="true"></i><b>Sistema para Lavadoras</b></a>
+    <h1>Política de privacidad</h1>
+    <p class="lead">Sistema para Lavadoras y Lubricadoras · Zynthea Solutions</p>
+  </div>
+</header>
+
+<main class="wrap-legal">
+  <article class="card legal">
+    <p class="updated">Última actualización: 15 de noviembre de 2026</p>
+
+    <h2>1. Responsable del tratamiento</h2>
+    <p>El responsable de los datos personales tratados en el Sistema para Lavadoras es <b>Karen Arias Jáuregui</b>, que opera bajo el nombre comercial <b>Zynthea Solutions</b>, con domicilio en Quito, Ecuador.</p>
+    <p>Contacto: <a href="mailto:karenarias.bme@gmail.com">karenarias.bme@gmail.com</a></p>
+
+    <h2>2. Datos que se recogen</h2>
+    <ul>
+      <li><b>Datos de la cuenta:</b> correo electrónico, nombre y contraseña (la contraseña se guarda cifrada y nadie puede leerla).</li>
+      <li><b>Inicio de sesión con Google:</b> si eliges entrar con tu cuenta de Google, solo recibimos tu correo, tu nombre y tu foto de perfil. No accedemos a tus contactos, correos, archivos ni a ningún otro dato de tu cuenta de Google.</li>
+      <li><b>Solicitud de acceso:</b> la fecha en que te registraste y el estado de tu acceso (en revisión, aprobado, rechazado o suspendido), con la nota que te mostramos si no se aprueba o se suspende.</li>
+      <li><b>Datos de la lavadora:</b> nombre, logo, colores, mano de obra y plan.</li>
+      <li><b>Datos que registras en el sistema:</b> aceites y filtros (stock, precios), marcas y modelos de vehículos, cambios de aceite y usos de aceite y filtros, con la fecha y el nombre del cliente.</li>
+      <li><b>Registro de cambios (auditoría):</b> qué se creó, modificó o borró, quién lo hizo y cuándo, con el valor anterior y el nuevo.</li>
+    </ul>
+    <p>Los datos de tus clientes los ingresas tú como lavadora. Respecto de ellos, tu lavadora es la responsable y Zynthea Solutions actúa como encargado del tratamiento: solo los guarda y procesa para que puedas usar el sistema.</p>
+
+    <h2>3. Finalidad</h2>
+    <p>Los datos se usan únicamente para prestar el servicio: revisar tu solicitud de acceso, crear y proteger tu cuenta, mostrarte la información de tu lavadora, calcular stock y valores, respaldar la información y darte soporte cuando lo pidas.</p>
+    <p><b>No se usan para publicidad</b> ni para elaborar perfiles comerciales.</p>
+
+    <h2>4. Acceso por aprobación</h2>
+    <p>Cualquier persona puede crear una cuenta, pero <b>nadie entra al sistema sin aprobación</b>. Mientras tu cuenta está en revisión, rechazada o suspendida no puedes ver ni registrar datos de trabajo. Si tu solicitud no se aprueba, puedes pedir que eliminemos tu cuenta.</p>
+
+    <h2>5. Almacenamiento, seguridad y respaldos</h2>
+    <ul>
+      <li>La información se guarda en <b>Supabase</b> (base de datos PostgreSQL), con conexión cifrada (HTTPS).</li>
+      <li>La base aplica <b>seguridad por fila</b>: cada lavadora solo puede ver y modificar sus propios datos; ningún otro usuario puede acceder a ellos.</li>
+      <li><b>Borrado lógico:</b> lo que borras dentro del sistema no se elimina de la base; se marca como borrado y deja de mostrarse. Así se evita perder información por error y queda constancia en el registro de cambios.</li>
+      <li><b>Respaldos:</b> se hace una copia de seguridad cifrada de la base cada día. Cada copia se conserva <b>30 días</b> y luego se elimina.</li>
+      <li>El logo de la lavadora se guarda como imagen pública para poder mostrarlo en el sistema. No subas como logo imágenes con información privada.</li>
+    </ul>
+
+    <h2>6. Con quién se comparten los datos</h2>
+    <p><b>No vendemos, alquilamos ni compartimos tus datos con terceros.</b> Solo intervienen los proveedores de infraestructura necesarios para que el sistema funcione (Supabase para la base de datos y la autenticación, GitHub para publicar la aplicación y guardar los respaldos cifrados y, si lo eliges, Google para iniciar sesión), que tratan los datos por cuenta nuestra y no pueden usarlos para fines propios.</p>
+    <p>Solo entregaríamos datos a una autoridad cuando una ley o una orden judicial lo exija.</p>
+
+    <h2>7. Tus derechos</h2>
+    <p>De acuerdo con la <b>Ley Orgánica de Protección de Datos Personales del Ecuador</b>, puedes ejercer en cualquier momento tus derechos de:</p>
+    <ul>
+      <li><b>Acceso:</b> saber qué datos tuyos tenemos.</li>
+      <li><b>Rectificación y actualización:</b> corregir datos inexactos o incompletos (también puedes hacerlo directamente desde el sistema).</li>
+      <li><b>Eliminación:</b> pedir que borremos tus datos.</li>
+      <li>Además, los demás derechos que reconoce la ley, como oposición, portabilidad y suspensión del tratamiento.</li>
+    </ul>
+    <p>Para ejercerlos, escribe a <a href="mailto:karenarias.bme@gmail.com">karenarias.bme@gmail.com</a> desde el correo de tu cuenta, indicando tu solicitud. Responderemos en los plazos que establece la ley. Si consideras que no se atendió tu solicitud, puedes acudir a la Superintendencia de Protección de Datos Personales.</p>
+
+    <h2>8. Cambio de plan, suspensión y eliminación de la cuenta</h2>
+    <ul>
+      <li><b>Cambiar de plan nunca borra datos:</b> solo muestra u oculta funciones. Si vuelves a un plan con más funciones, encuentras todo como lo dejaste.</li>
+      <li>Si tu acceso se suspende, tus datos se conservan y vuelven a estar disponibles al reactivarlo.</li>
+      <li>Puedes pedir en cualquier momento que eliminemos tu cuenta. Al hacerlo se eliminan definitivamente tu usuario, los datos de tu lavadora y todo lo registrado en ella, incluidos los registros con borrado lógico. Si lo necesitas, antes podemos entregarte una copia de tu información.</li>
+      <li>Después de la eliminación, tus datos pueden seguir en los respaldos cifrados hasta que estos se eliminen, como máximo <b>30 días</b>. No se usan para nada más que recuperar el sistema ante una falla.</li>
+    </ul>
+
+    <h2>9. Cambios a esta política</h2>
+    <p>Si cambiamos esta política, publicaremos la nueva versión en esta página con su fecha de actualización. Si el cambio es importante, te avisaremos por correo.</p>
+  </article>
+</main>
+
+<footer class="legal-foot">
+  <a href="index.html">Volver al inicio de sesión</a> · <a href="terminos.html">Términos de servicio</a><br>
+  Desarrollado por Zynthea Solutions
+</footer>
+
+</body>
+</html>

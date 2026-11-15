@@ -1,4 +1,9 @@
-# Demo · Sistema para Lavadoras y Lubricadoras
+# Sistema para Lavadoras y Lubricadoras
+
+- **App (acceso por aprobación):** `index.html` (inicio de sesión) y `app.html`. Supabase `zynthea-lavadoras`; solo la publishable key en `config.js`.
+- **Demo:** `demo/index.html`.
+
+## Demo
 
 Demo gratuita del Sistema para Lavadoras y Lubricadoras de **Zynthea Solutions**: stock de aceites y filtros con aviso de stock bajo, cambios de aceite por marca y modelo, galones y cuartos, valor a cobrar y exportación a Excel.
 

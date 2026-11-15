@@ -248,8 +248,9 @@ const DEMO_F=[
  ['f12','Filtro de aceite','Aceite','Marca C','','Toyota / Isuzu',10,4,7]
 ].map(f=>({id:f[0],n:f[1],tipo:f[2],marca:f[3],ref:f[4],uso:f[5],ini:f[6],ent:0,min:f[7],precio:f[8]}));
 const SLOTS=[['fAceite','Filtro de aceite','Aceite'],['fAire','Filtro de aire','Aire'],['fComb','Filtro de combustible','Combustible'],['fCabina','Filtro de cabina','Cabina']];
-let vid=0;
-const V=(marca,modelo,aceite,cant,o={})=>Object.assign({id:'v'+(++vid),marca,modelo,aceite,cant},
+// ID único (igual que DI-KAR): un contador que vuelve a 0 al recargar repetía los IDs de los modelos guardados
+const vehId=()=>'v'+Date.now()+Math.random().toString(36).slice(2,6);
+const V=(marca,modelo,aceite,cant,o={})=>Object.assign({id:vehId(),marca,modelo,aceite,cant},
   Object.fromEntries(SLOTS.flatMap(([s])=>[[s,''],[s+'C','']])),o);
 const DEMO_V=[
  V('Chevrolet','Aveo','a4',1,{fAceite:'f1',fAceiteC:'f10',fAire:'f5',fCabina:'f9'}),
@@ -276,6 +277,7 @@ const norm=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,''
 function load(k,def){try{const v=JSON.parse(localStorage.getItem(k));return Array.isArray(v)?v:def}catch(e){return def}}
 function store(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
 let A=load(K.aceites,DEMO_A),F=load(K.filtros,DEMO_F),RA=load(K.regA,[]),RF=load(K.regF,[]),VE=load(K.veh,DEMO_V),CA=load(K.cambios,[]);
+{const vistos=new Set();let rep=false;VE.forEach(v=>{if(!v.id||vistos.has(v.id)){v.id=vehId();rep=true}vistos.add(v.id)});if(rep)store(K.veh,VE)}  // repara IDs repetidos ya guardados
 let CONF={mo:5};try{const c=JSON.parse(localStorage.getItem(K.conf));if(c&&typeof c==='object')CONF=Object.assign(CONF,c)}catch(e){}
 const SAVE={aceites:()=>store(K.aceites,A),filtros:()=>store(K.filtros,F),regA:()=>store(K.regA,RA),regF:()=>store(K.regF,RF),veh:()=>store(K.veh,VE),cambios:()=>store(K.cambios,CA),conf:()=>{try{localStorage.setItem(K.conf,JSON.stringify(CONF))}catch(e){}}};
 let toastH;

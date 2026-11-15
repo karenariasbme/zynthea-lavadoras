@@ -1,0 +1,212 @@
+/* =====================================================================
+   Sistema para Lavadoras · estilos
+   Paleta de la demo (azul #0F2E44, ámbar #D0911C, Barlow).
+   --brand y --accent se reemplazan con los colores de cada lavadora
+   (app.js) y --brand-ink / --accent-ink con el texto de mejor contraste.
+   ===================================================================== */
+:root{
+  --bg:#ECF0F3; --surface:#FFFFFF; --surface-2:#F4F7F9; --ink:#15232E; --muted:#5D6D7A; --line:#D8E0E6;
+  --brand:#0F2E44; --brand-ink:#FFFFFF; --brand-soft:#B9CCDA;
+  --accent:#D0911C; --accent-ink:#1A1206;
+  --focus:#1D6BAE; --focus-soft:#DDEBF7;
+  --bad:#B33A25; --bad-soft:#F9E3DE; --warn:#A35F00; --warn-soft:#FDF0D9; --good:#2A7749; --good-soft:#E0F2E7;
+  --wa:#1F8A4C; --wa-ink:#FFFFFF;
+  --shadow:0 1px 2px rgba(15,46,68,.06),0 4px 14px rgba(15,46,68,.05);
+  --radius:12px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0D171E; --surface:#15232D; --surface-2:#1B2C38; --ink:#E2EAF0; --muted:#94A5B2; --line:#263946;
+    --focus:#4E9FE0; --focus-soft:#15324A;
+    --bad:#F07A63; --bad-soft:#3B1E19; --warn:#E8B04C; --warn-soft:#382A12; --good:#5CC48A; --good-soft:#163525;
+    --shadow:none; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0D171E; --surface:#15232D; --surface-2:#1B2C38; --ink:#E2EAF0; --muted:#94A5B2; --line:#263946;
+  --focus:#4E9FE0; --focus-soft:#15324A;
+  --bad:#F07A63; --bad-soft:#3B1E19; --warn:#E8B04C; --warn-soft:#382A12; --good:#5CC48A; --good-soft:#163525;
+  --shadow:none; color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:400 15px/1.5 "Barlow",system-ui,sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh}
+h1,h2,h3{font-family:"Barlow Condensed",sans-serif;font-weight:700;margin:0;line-height:1.1}
+h1{font-size:30px} h2{font-size:23px} h3{font-size:18px;font-weight:600}
+p{margin:0}
+a{color:inherit}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+[hidden]{display:none!important}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);border:0}
+.muted{color:var(--muted)} .small{font-size:13px}
+.note{color:var(--muted);font-size:14px}
+
+/* ---------- Botones y campos ---------- */
+.btn{border:1.5px solid var(--line);background:var(--surface);border-radius:9px;padding:10px 16px;font-weight:600;cursor:pointer;font-size:15px;
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;color:var(--ink);min-height:44px}
+.btn:hover{border-color:var(--muted)}
+.btn:disabled,.btn.disabled{opacity:.6;cursor:default;pointer-events:none}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+.btn.accent{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.whatsapp{background:var(--wa);border-color:var(--wa);color:var(--wa-ink)}
+.btn.ghost{background:none}
+.btn.danger{color:var(--bad)}
+.btn.block{width:100%}
+.btn.sm{padding:6px 12px;font-size:14px;min-height:36px}
+.btn svg{width:20px;height:20px;flex:none}
+.link{background:none;border:0;padding:6px 0;color:var(--muted);font-weight:600;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.link:hover{color:var(--ink)}
+
+.stack{display:flex;flex-direction:column;gap:14px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.field{display:flex;flex-direction:column;gap:5px}
+.field-label{font-weight:600;font-size:14px}
+.field small{color:var(--muted);font-size:13px}
+.input{width:100%;padding:11px 13px;border:1.5px solid var(--line);border-radius:10px;background:var(--surface);font-size:16px;min-height:44px}
+.input:focus{outline:none;border-color:var(--focus);box-shadow:0 0 0 3px var(--focus-soft)}
+.input:disabled{background:var(--surface-2);color:var(--muted)}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+
+.msg{padding:10px 12px;border-radius:9px;font-size:14px;font-weight:500}
+.msg.error{background:var(--bad-soft);color:var(--bad)}
+.msg.ok{background:var(--good-soft);color:var(--good)}
+.msg.warn{background:var(--warn-soft);color:var(--warn)}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
+
+/* ---------- Marca ---------- */
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit}
+.brand-mark{width:32px;height:32px;border-radius:8px;flex:none;display:block;
+  background:linear-gradient(135deg,var(--accent) 0 50%,#3D8FD6 50% 100%)}
+.brand b{font:700 22px/1 "Barlow Condensed",sans-serif;letter-spacing:.3px}
+.foot-credit{text-align:center;font-size:12px;color:var(--muted);margin-top:18px}
+
+/* ---------- Login ---------- */
+.auth-page{background:linear-gradient(180deg,#0F2E44 0 290px,var(--bg) 290px)}
+.auth{max-width:440px;margin:0 auto;padding:28px 16px 30px}
+.auth>.brand{color:#fff;margin-bottom:22px}
+.auth h1{color:#fff;font-size:32px}
+.auth .lead{color:#B9CCDA;margin:8px 0 20px}
+.auth-card{padding:22px}
+.tabs{display:grid;grid-template-columns:1fr 1fr;background:var(--surface-2);border-radius:10px;padding:4px;margin-bottom:18px}
+.tabs button{border:0;background:none;border-radius:7px;padding:9px 6px;font-weight:600;color:var(--muted);cursor:pointer;min-height:40px}
+.tabs button[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+.btn-google{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:46px;border:1.5px solid var(--line);
+  border-radius:10px;background:var(--surface);font-weight:600;cursor:pointer;font-size:15px}
+.btn-google:hover{border-color:var(--muted)}
+.btn-google svg{width:20px;height:20px}
+.divider{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:13px}
+.divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line)}
+.auth-card h2{font-size:22px}
+.auth-foot{text-align:center;font-size:14px;color:var(--muted);margin-top:16px}
+.auth-foot a{color:var(--ink);font-weight:600}
+
+/* ---------- Pantallas de estado (cargando, pendiente, suspendido) ---------- */
+.splash{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:var(--muted);padding:16px;text-align:center}
+.spinner{width:28px;height:28px;border-radius:50%;border:3px solid var(--line);border-top-color:var(--accent);animation:gira .8s linear infinite;display:inline-block}
+@keyframes gira{to{transform:rotate(360deg)}}
+.gate{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px 16px;
+  background:linear-gradient(180deg,#0F2E44 0 220px,var(--bg) 220px)}
+.gate-card{max-width:460px;width:100%;text-align:left}
+.gate-card .brand{margin-bottom:16px}
+.gate-card h1{font-size:28px;margin-bottom:8px}
+.gate-card p{margin-bottom:10px}
+.gate-icon{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;margin-bottom:14px}
+.gate-icon svg{width:28px;height:28px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.gate-icon.wait{background:var(--warn-soft);color:var(--warn)}
+.gate-icon.stop{background:var(--bad-soft);color:var(--bad)}
+.email-pill{display:inline-block;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:3px 9px;font-weight:600;word-break:break-all}
+.nota{background:var(--surface-2);border-left:4px solid var(--bad);border-radius:8px;padding:10px 12px;margin:4px 0 14px;white-space:pre-line}
+.gate-links{display:flex;gap:8px 18px;flex-wrap:wrap;justify-content:center;margin-top:4px}
+.gate-links a{font-weight:600}
+
+/* ---------- App ---------- */
+.topbar{background:var(--brand);color:var(--brand-ink);position:sticky;top:0;z-index:30}
+.bar{max-width:1080px;margin:0 auto;padding:0 16px;display:flex;align-items:center;gap:14px;min-height:62px}
+.top-brand{display:flex;align-items:center;gap:10px;margin-right:auto;min-width:0;text-decoration:none;color:inherit}
+.top-brand .nombre{font:700 22px/1.1 "Barlow Condensed",sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nav{display:flex;gap:2px;align-self:stretch}
+.nav a{display:flex;align-items:center;gap:7px;padding:0 14px;color:inherit;opacity:.78;text-decoration:none;font-weight:600;border-bottom:3px solid transparent}
+.nav a:hover{opacity:1}
+.nav a[aria-current="page"]{opacity:1;border-bottom-color:var(--accent)}
+.nav svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.btn-salir{background:none;border:1.5px solid currentColor;color:inherit;border-radius:8px;padding:5px 11px;font-weight:600;cursor:pointer;opacity:.85;min-height:36px}
+.btn-salir:hover{opacity:1}
+
+.logo{display:block;object-fit:contain;flex:none;border-radius:8px;background:#fff}
+.logo.sm{width:36px;height:36px}
+.logo.lg{width:96px;height:96px;border-radius:14px;border:1px solid var(--line)}
+.logo.initials{display:grid;place-items:center;background:var(--accent);color:var(--accent-ink);font:700 16px "Barlow Condensed",sans-serif}
+.logo.initials.lg{font-size:36px}
+
+main.view{max-width:1080px;margin:0 auto;padding:22px 16px 40px}
+.page-head{margin-bottom:16px}
+.page-head p{color:var(--muted);margin-top:4px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;align-items:start}
+.state{padding:40px 16px;text-align:center;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:12px}
+.state.error{color:var(--bad)}
+.app-foot{text-align:center;font-size:12px;color:var(--muted);padding:0 16px 24px}
+.app-foot a{color:inherit}
+
+/* Inicio */
+.hero{background:var(--brand);color:var(--brand-ink);border-radius:var(--radius);padding:22px;display:flex;gap:16px;align-items:center;margin-bottom:16px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:0;top:0;bottom:0;width:8px;background:var(--accent)}
+.hero h1{font-size:30px}
+.hero p{opacity:.85;margin-top:4px}
+.datos{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.dato{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow);min-width:0}
+.dato dt{font-size:13px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+.dato dd{margin:4px 0 0;font:700 24px/1.15 "Barlow Condensed",sans-serif;overflow-wrap:anywhere}
+.dato dd.texto{font:600 16px/1.35 "Barlow",sans-serif}
+.badge{display:inline-block;border-radius:999px;padding:2px 10px;font-size:13px;font-weight:700;background:var(--accent);color:var(--accent-ink);vertical-align:middle}
+.aviso{background:var(--warn-soft);color:var(--warn);border-radius:10px;padding:10px 12px;font-size:14px;font-weight:500}
+
+/* Mi lavadora */
+.logo-preview{display:flex;align-items:center;gap:14px}
+.color-row{display:flex;gap:8px;align-items:center}
+.color-row input[type=color]{width:52px;height:44px;padding:3px;border:1.5px solid var(--line);border-radius:10px;background:var(--surface);cursor:pointer;flex:none}
+.color-row input[type=color]:disabled{cursor:default;opacity:.7}
+.color-row .input{font-family:ui-monospace,Consolas,monospace;text-transform:uppercase}
+.muestra{border-radius:10px;overflow:hidden;border:1px solid var(--line)}
+.muestra-bar{padding:12px 14px;display:flex;align-items:center;gap:10px;font:700 19px "Barlow Condensed",sans-serif}
+.muestra-body{padding:12px 14px;background:var(--surface-2);display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.muestra-btn{border-radius:8px;padding:7px 13px;font-weight:600;font-size:14px}
+.contraste{font-size:13px;color:var(--muted)}
+
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:11px 18px;border-radius:10px;
+  font-weight:600;opacity:0;pointer-events:none;transition:.2s;z-index:60;max-width:calc(100% - 32px);text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.error{background:var(--bad);color:#fff}
+
+/* ---------- Páginas legales ---------- */
+.legal-head{background:#0F2E44;color:#fff;padding:26px 0 70px}
+.legal-head .brand{color:#fff;margin-bottom:18px}
+.legal-head .lead{color:#B9CCDA;margin-top:6px}
+.wrap-legal{max-width:780px;margin:0 auto;padding:0 16px}
+main.wrap-legal{margin-top:-48px}
+.legal{line-height:1.65}
+.legal h2{font-size:21px;margin:24px 0 8px}
+.legal p{margin:0 0 10px}
+.legal ul{padding-left:22px;margin:0 0 10px}
+.legal li{margin-bottom:6px}
+.legal a{color:var(--focus);font-weight:600}
+.updated{color:var(--muted);font-size:14px}
+.legal-foot{text-align:center;font-size:13px;color:var(--muted);padding:22px 16px 30px;line-height:1.8}
+.legal-foot a{color:var(--ink);font-weight:600}
+
+/* ---------- Celular ---------- */
+@media (max-width:640px){
+  .bar{flex-wrap:wrap;gap:8px 12px;min-height:56px;padding-top:6px}
+  .nav{order:3;width:calc(100% + 32px);margin:0 -16px;padding:0 6px;border-top:1px solid rgba(127,127,127,.25)}
+  .nav a{flex:1;justify-content:center;min-height:46px;padding:0 8px}
+  .top-brand .nombre{font-size:20px}
+  .cols{grid-template-columns:1fr}
+  .hero{padding:18px}
+  .hero h1{font-size:25px}
+  .grid2{grid-template-columns:minmax(0,1fr)}
+  .auth h1{font-size:28px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
