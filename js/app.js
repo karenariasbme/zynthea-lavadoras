@@ -3,17 +3,25 @@ import { h, errMsg, must, waLink, PLANES_URL, DEMO_URL } from "./util.js";
 import { state, LAVADORA_COLS } from "./state.js";
 import { loading, errorBox, lavadoraLogo, waIcon, aplicarColores } from "./ui.js";
 import * as inicio from "./views/inicio.js";
-import * as lavadora from "./views/lavadora.js";
+import * as productos from "./views/productos.js";
+import * as config from "./views/config.js";
 import * as admin from "./views/admin.js";
 
 const $ = (id) => document.getElementById(id);
 
-// Parte 1: solo Inicio y Mi lavadora. La administradora solo tiene el panel (#admin/<pestaña>).
-let routes = { inicio: inicio.render, lavadora: lavadora.render };
+// Plan Básico: Inicio, Aceites, Filtros y Configuración. La administradora solo tiene el panel (#admin/<pestaña>).
+let routes = {
+  inicio: inicio.render,
+  aceites: (box) => productos.render(box, "aceites"),
+  filtros: (box) => productos.render(box, "filtros"),
+  config: config.render,
+};
+const ALIAS = { lavadora: "config" };   // enlaces viejos a "Mi lavadora"
 
 let seq = 0;
 async function route() {
-  const name = location.hash.replace(/^#/, "").split("/")[0];
+  const name0 = location.hash.replace(/^#/, "").split("/")[0];
+  const name = ALIAS[name0] || name0;
   const key = routes[name] ? name : Object.keys(routes)[0];
   for (const a of document.querySelectorAll("#nav a")) {
     if (a.dataset.route === key) a.setAttribute("aria-current", "page");
@@ -32,6 +40,7 @@ async function route() {
   if (token === seq) window.scrollTo(0, 0);
 }
 state.refresh = route;
+state.logout = () => logout();
 
 async function logout() {
   await sb.auth.signOut();
@@ -162,6 +171,7 @@ async function init() {
 
   updateChrome();
   $("logoutBtn").addEventListener("click", logout);
+  $("logoutNav").addEventListener("click", logout);
   $("splash").hidden = true;
   $("shell").hidden = false;
   window.addEventListener("hashchange", route);

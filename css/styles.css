@@ -181,6 +181,89 @@ main.view{max-width:1080px;margin:0 auto;padding:22px 16px 40px}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .toast.error{background:var(--bad);color:#fff}
 
+/* ---------- Aceites y filtros ---------- */
+.ico{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.head-row{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.filtros-bar{display:grid;grid-template-columns:minmax(0,1fr) 220px auto;gap:10px;align-items:center;margin-bottom:8px}
+.buscar{position:relative;display:block}
+.buscar .ico{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);width:18px;height:18px}
+.buscar .input{padding-left:38px}
+.check{display:flex;align-items:center;gap:8px;font-weight:600;font-size:14px;cursor:pointer;white-space:nowrap;min-height:44px}
+.check input{width:20px;height:20px;accent-color:var(--brand)}
+.prod-lista{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;align-items:start;margin-top:8px}
+.prod{padding:16px;display:flex;flex-direction:column;gap:6px;border-left:5px solid var(--good);min-width:0}
+.prod.bajo{border-left-color:var(--warn)}
+.prod.agotado{border-left-color:var(--bad)}
+.prod h3{font-size:21px;overflow-wrap:anywhere}
+.prod-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.prod-det{color:var(--muted);font-size:14px;overflow-wrap:anywhere}
+.prod-stock{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-top:4px}
+.prod-stock b{font:700 26px/1.1 "Barlow Condensed",sans-serif}
+.prod.bajo .prod-stock b{color:var(--warn)}
+.prod.agotado .prod-stock b{color:var(--bad)}
+.prod-stock span{color:var(--muted);font-size:13px}
+.barra{height:6px;border-radius:99px;background:var(--surface-2);overflow:hidden}
+.barra i{display:block;height:100%;background:var(--good);border-radius:99px}
+.prod.bajo .barra i{background:var(--warn)} .prod.agotado .barra i{background:var(--bad)}
+.prod-acciones{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
+.chip.warn{background:var(--warn-soft);color:var(--warn)}
+.chip.tipo{background:var(--surface-2);color:var(--muted);border:1px solid var(--line)}
+.cols>*{min-width:0}
+.sugerido{display:block}
+.qty{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.qty-g{position:relative;display:block}
+.qty-g .input{padding-right:78px}
+.qty-g span{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px;pointer-events:none}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:4px;background:var(--surface-2);border-radius:10px;padding:4px}
+.seg button{border:0;background:none;border-radius:7px;padding:9px;font-weight:600;color:var(--muted);cursor:pointer;display:flex;gap:7px;align-items:center;justify-content:center;min-height:42px}
+.seg button[aria-checked="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+.uso-prod{font-size:17px}
+.modal-ancho{width:min(560px,calc(100% - 24px))}
+.modal-izq{margin-right:auto}
+.hist{list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.hist-fila{display:flex;justify-content:space-between;gap:12px;padding:10px 12px;border-top:1px solid var(--line)}
+.hist-fila:first-child{border-top:0}
+.hist-fila>div{min-width:0;overflow-wrap:anywhere}
+.hist-der{text-align:right;flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.menos{color:var(--bad)}
+.danger-link{color:var(--bad)}
+.hist-resumen{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:0}
+.hist-resumen>div{background:var(--surface-2);border-radius:10px;padding:8px 10px;min-width:0}
+.hist-resumen dt{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.3px}
+.hist-resumen dd{margin:2px 0 0;font-weight:700;overflow-wrap:anywhere}
+.modal h3{font-size:19px;margin-top:4px}
+
+/* Inicio */
+.hero-saludo{opacity:.85;margin:0 0 2px!important;font-weight:600}
+.rapidos{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+.rapido{display:flex;align-items:center;gap:12px;text-align:left;cursor:pointer;padding:14px 16px;font:inherit;color:inherit;border:1px solid var(--line)}
+.rapido:hover{border-color:var(--muted)}
+.rapido b{display:block;font-size:16px}
+.rapido small{color:var(--muted);font-size:13px}
+.rapido-ico{width:42px;height:42px;border-radius:11px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;flex:none}
+.alertas{list-style:none;margin:0;padding:0}
+.alertas li+li{border-top:1px solid var(--line)}
+.alertas a{display:flex;align-items:center;gap:12px;padding:10px 2px;text-decoration:none;color:inherit}
+.alerta-ico{width:34px;height:34px;border-radius:9px;background:var(--warn-soft);color:var(--warn);display:grid;place-items:center;flex:none}
+.alerta-txt{min-width:0;flex:1}
+.alerta-txt b,.alerta-txt small{display:block;overflow-wrap:anywhere}
+.alerta-txt small{color:var(--muted);font-size:13px}
+.alertas .chip{flex:none}
+.ok-txt{color:var(--good);font-weight:600}
+
+/* Configuración */
+.cfg-sec{margin-bottom:22px}
+.cfg-tit{margin-bottom:12px}
+.cfg-datos{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0}
+.cfg-datos dt{font-size:13px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+.cfg-datos dd{margin:4px 0 0;font-weight:700;overflow-wrap:anywhere}
+.cfg-datos>div:only-child{grid-column:1 / -1}
+.incluye{margin:6px 0 0;padding-left:20px}
+.incluye li{margin-bottom:4px}
+
+/* Menú: "Salir" va en la barra inferior del celular */
+.nav-salir{display:none}
+
 /* ---------- Panel de administración ---------- */
 .admin-tabs{display:flex;gap:4px;background:var(--surface-2);border:1px solid var(--line);border-radius:11px;padding:4px;margin-bottom:16px;
   overflow-x:auto;scrollbar-width:none}
@@ -240,6 +323,23 @@ main.wrap-legal{margin-top:-48px}
   .hero h1{font-size:25px}
   .grid2{grid-template-columns:minmax(0,1fr)}
   .auth h1{font-size:28px}
+  /* Barra inferior fija estilo app */
+  .nav{position:fixed;left:0;right:0;bottom:0;width:auto;margin:0;padding:0 0 env(safe-area-inset-bottom);z-index:40;
+    background:var(--brand);border-top:1px solid rgba(127,127,127,.3);box-shadow:0 -4px 14px rgba(0,0,0,.12)}
+  .nav a,.nav-salir{flex:1 1 0;flex-direction:column;gap:3px;min-height:58px;padding:6px 0;font-size:10.5px;letter-spacing:-.1px;justify-content:center;
+    border-bottom:0;border-top:3px solid transparent;min-width:0}
+  .nav a[aria-current="page"]{border-bottom:0;border-top-color:var(--accent)}
+  .nav a span,.nav-salir span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+  .nav svg{width:22px;height:22px}
+  .nav-salir{display:flex;align-items:center;background:none;border:0;color:inherit;opacity:.78;font-weight:600;cursor:pointer;font-family:inherit}
+  .nav:not([hidden])~.btn-salir{display:none}
+  #shell:has(.nav:not([hidden])){padding-bottom:calc(64px + env(safe-area-inset-bottom))}
+  .toast{bottom:calc(80px + env(safe-area-inset-bottom))}
+  .filtros-bar{grid-template-columns:1fr auto}
+  .filtros-bar .buscar{grid-column:1 / -1}
+  .rapidos{grid-template-columns:1fr}
+  .hist-resumen{grid-template-columns:1fr 1fr}
+  .prod-lista{grid-template-columns:minmax(0,1fr)}
   .admin-tabs{display:grid;grid-template-columns:1fr 1fr;overflow:visible}
   .admin-tabs a{padding:8px 6px}
 }

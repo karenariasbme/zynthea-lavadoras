@@ -1,7 +1,8 @@
+// Tarjetas de "Mi lavadora" (datos y logo). Se muestran en Configuración.
 import { sb } from "../sb.js";
 import { h, must, val, toast, errMsg, esHex, tintaSobre, contraste, COLOR_PRIMARIO, COLOR_ACENTO } from "../util.js";
 import { state, esDueno, LAVADORA_COLS } from "../state.js";
-import { pageHead, field, input, asyncForm, userError, lavadoraLogo } from "../ui.js";
+import { field, input, asyncForm, userError, lavadoraLogo } from "../ui.js";
 
 const LOGO_TIPOS = { "image/png": "png", "image/jpeg": "jpg", "image/webp": "webp" };
 const LOGO_MAX = 1024 * 1024; // 1 MB (el bucket "logos" tiene el mismo límite)
@@ -23,17 +24,6 @@ async function limpiarLogos(vigente) {
   if (sobrantes.length) await sb.storage.from("logos").remove(sobrantes);
 }
 
-export async function render(box) {
-  const dueno = esDueno();
-  // box.append es del DOM: convertiría false en el texto "false", por eso se filtra
-  box.append(...[
-    pageHead("Mi lavadora", dueno ? "Nombre, logo, colores y mano de obra" : "Configuración de la lavadora (solo lectura)"),
-    !dueno && h("p", { class: "aviso", style: { marginBottom: "16px" } },
-      "Solo el dueño puede cambiar estos datos. Si algo está mal, avísale."),
-    h("div", { class: "grid2" }, datosCard(dueno), logoCard(dueno)),
-  ].filter(Boolean));
-}
-
 // ---------- Datos y colores ----------
 function colorField(label, name, valor, dueno, onInput) {
   const picker = h("input", { type: "color", value: valor, disabled: !dueno, "aria-label": `${label} (selector)` });
@@ -50,7 +40,7 @@ function colorField(label, name, valor, dueno, onInput) {
   return { el: h("div", { class: "field" }, h("span", { class: "field-label" }, label), h("div", { class: "color-row" }, picker, hex)), leer };
 }
 
-function datosCard(dueno) {
+export function datosCard(dueno) {
   const l = state.lavadora;
 
   // Muestra en vivo de los colores con el texto de contraste automático
@@ -116,7 +106,7 @@ function datosCard(dueno) {
 }
 
 // ---------- Logo ----------
-function logoCard(dueno) {
+export function logoCard(dueno) {
   const preview = h("div", { class: "logo-preview" });
   const msg = h("p", { class: "msg error", role: "alert", hidden: true });
   const fileIn = h("input", { type: "file", accept: "image/png,image/jpeg,image/webp", class: "sr-only", id: "logo-file" });

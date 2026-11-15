@@ -7,6 +7,7 @@ export const state = {
   lavadora: null,         // { id, nombre, logo_path, color_primario, color_acento, mano_obra, plan }
   refresh: () => {},      // vuelve a pintar la pantalla actual
   updateChrome: () => {}, // vuelve a pintar logo, nombre y colores
+  logout: () => {},       // cierra la sesión (Configuración → Mi cuenta)
 };
 
 /** ¿El usuario puede editar la configuración de la lavadora? (solo el dueño) */

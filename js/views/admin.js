@@ -2,7 +2,7 @@
 // La seguridad está en la base: cada función admin_* comprueba es_admin() y rechaza a cualquier otro usuario.
 import { sb } from "../sb.js";
 import { h, must, val, toast, errMsg, PLANES } from "../util.js";
-import { pageHead, field, input, asyncForm, userError, loading, errorBox } from "../ui.js";
+import { pageHead, field, input, asyncForm, userError, loading, errorBox, ventana } from "../ui.js";
 
 const TABS = [
   ["dar", "Dar acceso"],
@@ -23,34 +23,6 @@ const tabActual = () => {
   const t = location.hash.replace(/^#/, "").split("/")[1];
   return TABS.some(([k]) => k === t) ? t : "dar";
 };
-
-// ---------- Ventana (dentro de la página; nunca alert/confirm del navegador) ----------
-/**
- * Abre una ventana con un formulario. onSubmit(fd) hace la acción; si lanza un error, se muestra
- * dentro de la ventana y queda abierta. Si termina bien, se cierra y se muestra el aviso.
- */
-function ventana({ titulo, texto, campos = [], boton, peligro = false, onSubmit }) {
-  const dlg = h("dialog", { class: "modal", "aria-label": titulo });
-  const cerrar = () => { dlg.close(); dlg.remove(); };
-  const form = asyncForm({ class: "stack" }, [
-    h("h2", {}, titulo),
-    texto && h("p", { class: "note" }, texto),
-    campos,
-    h("div", { class: "actions modal-actions" },
-      h("button", { class: "btn ghost", type: "button", onclick: cerrar }, "Cancelar"),
-      h("button", { class: `btn ${peligro ? "danger-fill" : "primary"}`, type: "submit" }, boton)),
-  ], async (fd) => {
-    const aviso = await onSubmit(fd);
-    cerrar();
-    if (aviso) toast(aviso);
-  });
-  dlg.append(form);
-  dlg.addEventListener("cancel", (e) => { e.preventDefault(); cerrar(); });   // tecla Esc
-  dlg.addEventListener("click", (e) => { if (e.target === dlg) cerrar(); });  // clic fuera
-  document.body.append(dlg);
-  dlg.showModal();
-  dlg.querySelector("input,select,textarea")?.focus();
-}
 
 const notaField = (label, requerido) =>
   field(label, h("textarea", { class: "input", name: "nota", rows: 3, maxlength: 300, required: requerido }),
