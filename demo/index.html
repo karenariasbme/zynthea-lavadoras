@@ -8,7 +8,9 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="Demo · Sistema para Lavadoras y Lubricadoras · Zynthea Solutions">
 <meta property="og:description" content="Prueba gratis el sistema: stock de aceites y filtros, cambios de aceite por marca y modelo, galones y cuartos y aviso de stock bajo. Sin registro.">
-<meta property="og:url" content="https://karenariasbme.github.io/zynthea-lavadoras/">
+<meta name="robots" content="noindex, follow">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Cpath d=%22M0 8a8 8 0 0 1 8-8h24L0 32z%22 fill=%22%23D0911C%22/%3E%3Cpath d=%22M32 24a8 8 0 0 1-8 8H0L32 0z%22 fill=%22%233D8FD6%22/%3E%3C/svg%3E">
+<meta property="og:url" content="https://karenariasbme.github.io/zynthea-lavadoras/demo/">
 <meta property="og:image" content="https://karenariasbme.github.io/KarenArias/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -18,7 +20,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 :root{
   --bg:#ECF0F3; --surface:#FFFFFF; --surface-2:#F4F7F9; --ink:#15232E; --muted:#5D6D7A; --line:#D8E0E6;
@@ -695,7 +696,7 @@ function histC(){
 function delCambio(id){confirmar('Se eliminará este cambio. El aceite y los filtros vuelven al stock.',()=>{
   RA=RA.filter(r=>r.cambio!==id);RF=RF.filter(r=>r.cambio!==id);CA=CA.filter(c=>c.id!==id);
   SAVE.regA();SAVE.regF();SAVE.cambios();route();toast('Cambio eliminado')})}
-function xlsCambios(){if(!okX())return;
+async function xlsCambios(){if(!await okX())return;
   bajar(CA.map(c=>{const ra=RA.filter(r=>r.cambio===c.id),rf=RF.filter(r=>r.cambio===c.id);
     return {Fecha:c.fecha,Cliente:c.cliente,Marca:c.marca,Modelo:c.modelo,
       Aceite:ra.map(r=>{const p=findP('aceites',r.pid);return p?`${p.n} ${p.tipo} (${fmtQ(p,r.qty)})`:''}).join('; '),'Valor aceite':ra.reduce((a,r)=>a+(r.valor||0),0),
@@ -703,11 +704,15 @@ function xlsCambios(){if(!okX())return;
       'Mano de obra':c.mo,Total:c.total}}),'Cambios de aceite','cambios_de_aceite')}
 
 /* ---------- Excel ---------- */
-function okX(){if(typeof XLSX==='undefined'){toast('No se pudo cargar Excel. Revisa tu conexión.');return false}return true}
+// Excel (~900 KB) se descarga solo la primera vez que se exporta, no al abrir la demo
+let cargaX=null;
+function okX(){if(typeof XLSX!=='undefined')return Promise.resolve(true);
+  cargaX=cargaX||new Promise(r=>{const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';s.onload=()=>r(true);s.onerror=()=>{cargaX=null;r(false)};document.head.append(s)});
+  return cargaX.then(ok=>{if(!ok)toast('No se pudo cargar Excel. Revisa tu conexión.');return ok})}
 function bajar(rows,hoja,arch){const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),hoja);XLSX.writeFile(wb,`Demo_${arch}_${hoyISO()}.xlsx`)}
-function xlsStock(key){if(!okX())return;const c=CFG[key],R=c.R();
+async function xlsStock(key){if(!await okX())return;const c=CFG[key],R=c.R();
   bajar(c.L().map(p=>({[c.Uno]:p.n,Tipo:p.tipo,Marca:p.marca,...(key==='aceites'?{Presentación:p.pres}:{Código:p.ref,'Para qué vehículos':p.uso}),'Stock inicial':p.ini,Entradas:p.ent,Usado:usado(R,p.id),'Stock actual':actual(p,R),'Stock (texto)':fmtQ(p,actual(p,R)),'Avisar en':p.min,Precio:num(p.precio),...(key==='aceites'?{'Precio cuarto':isGal(p)?precioCt(p):''}:{}),Estado:ESTX[estado(p,R)]})),key==='aceites'?'Aceites':'Filtros',key)}
-function xlsUso(key){if(!okX())return;const c=CFG[key];
+async function xlsUso(key){if(!await okX())return;const c=CFG[key];
   bajar(c.R().map(r=>{const p=findP(key,r.pid);return {Fecha:r.fecha,Cliente:r.cliente,Marca:r.marca,Modelo:r.modelo,[c.Uno]:pname(p,key),...(key==='filtros'?{'Original / compatible':r.clase||''}:{}),Cantidad:r.qty,'Cantidad (texto)':p?fmtQ(p,r.qty):r.qty}}),key==='aceites'?'Aceite usado':'Filtros usados',key==='aceites'?'aceite_usado':'filtros_usados')}
 
 /* ---------- Navegación ---------- */
