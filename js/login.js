@@ -80,6 +80,8 @@ $("tab-login").addEventListener("click", () => show("login"));
 $("tab-signup").addEventListener("click", () => show("signup"));
 $("go-reset").addEventListener("click", () => show("reset"));
 $("back-login").addEventListener("click", () => show("login"));
+// "¿No tienes cuenta? Regístrate" / "¿Ya tienes cuenta? Inicia sesión"
+for (const b of document.querySelectorAll("[data-mode]")) b.addEventListener("click", () => show(b.dataset.mode));
 // Enlaces de la landing (?registro=1 o #registro) abren directamente "Crear cuenta"
 if (aviso.get("registro") === "1" || location.hash === "#registro") show("signup");
 

@@ -59,6 +59,8 @@ button,input,select{font:inherit;color:inherit}
 .btn svg{width:20px;height:20px;flex:none}
 .link{background:none;border:0;padding:6px 0;color:var(--muted);font-weight:600;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
 .link:hover{color:var(--ink)}
+.switch-mode{text-align:center;border-top:1px solid var(--line);padding-top:12px}
+.switch-mode .link{padding:0;color:var(--ink)}
 
 .stack{display:flex;flex-direction:column;gap:14px}
 .actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
