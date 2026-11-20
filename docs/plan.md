@@ -5,7 +5,7 @@ Schema: `public` (el proyecto es solo de lavadoras).
 
 | Paso | Qué | Estado |
 |---|---|---|
-| 1 | Decisiones (proyecto nuevo, repo `zynthea-lavadoras`, DI-KAR migra en el paso 10 como Premium) | ✅ |
+| 1 | Decisiones (proyecto nuevo, repo `zynthea-lavadoras`, DI-KAR entra en el paso 10; desde el 20/11/2026 sin migración y en plan Profesional) | ✅ |
 | 2 | `sql/lavadoras/001_esquema.sql` (tablas, RLS, borrado lógico, auditoría, funciones de la app) | ✅ Ejecutado (03/11/2026) |
 | 3 | Pruebas de seguridad del SQL en el proyecto real | ✅ 40/40 (03/11/2026) |
 | 4 | `002`: funciones de administración (aprobar, cambiar plan, suspender) | ✅ Ejecutado (03/11/2026) |
@@ -18,7 +18,7 @@ Schema: `public` (el proyecto es solo de lavadoras).
 | 7 | App Plan Básico: Aceites y Filtros con Supabase, menú tipo app, Configuración, buscador con marca y stock bajo, memoria al escribir | ✅ En `main` (15/11/2026), sin migraciones. Incluye Clientes (buscador e historial por cliente), Historial de cambios y Descargar mis datos. Probado con lavbas contra Supabase real a 375 px y escritorio; landing actualizada (galones y cuartos en Básico, respaldo en Excel en todos los planes) |
 | 8 | Plan Profesional (cliente de Karen): `007` + Aceites con SAE/uso/presentaciones, Filtros con rosca, precios de compra y venta, pestaña Cambios (Autos/Motos) | 🟡 `007` ejecutado (15/11/2026) con respaldo y restauración de prueba previos; 24/24 pruebas en la base (lavbas y lavpro). App en `main` y publicada (15/11/2026): sin campo Nombre (título Marca + SAE / Marca + Código; la columna nombre se llena sola). Probada en GitHub Pages con lavpro y lavbas a 375 px y escritorio. Falta: revisión de Karen |
 | 9 | Premium, prueba completa y publicación | Pendiente |
-| 10 | Migrar DI-KAR (Premium) | Pendiente |
+| 10 | DI-KAR: cuenta nueva **en blanco** (sin datos que migrar), plan **Profesional**, una sola persona, entra con Google | Pendiente. Se da acceso desde el panel (Dar acceso → correo del dueño, Profesional, "DI-KAR"); entra con "Continuar con Google" y queda aprobado solo. Antes, por ser el primer cliente real: SMTP propio + plantillas en español (paso 6) y respaldo + restauración de prueba en zynthea-ops |
 
 ## Requisito permanente: cada cliente conserva SIEMPRE todo lo que guardó
 
